@@ -1,0 +1,508 @@
+@import "mixins";
+
+#dashboard_right_now a.podcast-count:before, #dashboard_right_now span.podcast-count:before {
+	content: "\f482";
+}
+
+.feed-series-list-container {
+	margin-top: 8px;
+}
+
+#feed-series-toggle {
+	cursor: pointer;
+	float: left;
+	margin-top: 5px;
+	color: #aaa;
+}
+
+#feed-series-toggle:hover {
+	color: #777;
+}
+
+#feed-series-toggle:before {
+	font-family: dashicons;
+	font-size: 150%;
+}
+
+#feed-series-toggle.series-open:before {
+	content: "\f142";
+}
+
+#feed-series-toggle.series-closed:before {
+	content: "\f140";
+}
+
+#feed-series-list {
+	margin: 0;
+}
+
+.integrations-list-container > ul > li:not(:last-child):after {
+	content: '|';
+	padding-left: 3px;
+}
+
+.view-feed-link {
+	text-decoration: none;
+}
+
+.view-feed-link span {
+	font-size: 100%;
+	margin-top: 2px;
+	margin-bottom: -2px;
+}
+
+#podcast_settings .update-nag {
+	margin: 0;
+	padding: 1px 9pt;
+}
+
+textarea#episode_embed_code {
+	width: 100%;
+	height: 60px;
+}
+
+.episode_embed_code_size_option {
+	width: 50px;
+}
+
+#podcast-episode-data p {
+	line-height: 1.8;
+}
+
+#podcast-episode-data input[type="radio"] {
+	vertical-align: middle !important;
+}
+
+#podcast-episode-data input[type="text"] {
+	min-width: 50%;
+}
+
+.ssp-episode-details-label {
+	font-weight: bold;
+}
+
+#series_image_preview {
+	max-width: 160px;
+}
+
+#series_upload_image_button .dashicons {
+	vertical-align: middle;
+}
+
+#col-container .series-notice {
+	display: none;
+}
+
+
+.wp-core-ui {
+	.editor-styles-wrapper {
+		.castos-select {
+			font-size: 14px;
+			line-height: 2;
+			color: #2c3338;
+			border-color: #8c8f94;
+			box-shadow: none;
+			border-radius: 3px;
+			padding: 0 24px 0 8px;
+			min-height: 30px;
+			-webkit-appearance: none;
+			background: #fff url(data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M5%206l5%205%205-5%202%201-7%207-7-7%202-1z%22%20fill%3D%22%23555%22%2F%3E%3C%2Fsvg%3E) no-repeat right 5px top 55%;
+			background-size: 16px 16px;
+			cursor: pointer;
+			vertical-align: middle;
+			margin: 0 5px 0 10px;
+			width: 300px;
+		}
+
+		.button {
+			vertical-align: middle;
+			min-height: 30px;
+		}
+
+		@media screen and (max-width: 600px) {
+			.castos-select, .button {
+				width: 100%;
+				max-width: 100%;
+				margin: 10px 0 0;
+				line-height: 1em;
+			}
+		}
+	}
+}
+
+.ssp-error {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-left: 4px solid #d63638;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+	margin: 5px 15px 2px;
+	padding: 1px 12px;
+}
+
+.ssp-dynamo,.upsell-field {
+
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 0;
+	gap: 8px;
+
+	font-family: 'Inter', sans-serif;
+	font-style: normal;
+	font-weight: 500;
+	font-size: 14px;
+	color: $clr_gray_500;
+
+	&__container {
+		display: flex;
+		justify-content: center;
+		padding: 8px;
+		gap: 16px;
+		background: #F6F7F7;
+		border-radius: 8px;
+		align-items: center;
+
+		@include smaller('md') {
+			padding: 12px;
+		}
+
+		&:before {
+			content: '';
+			background: url('../img/stars.svg');
+			width: 22px;
+			height: 22px;
+
+			@include smaller('md') {
+				display: none;
+			}
+		}
+
+		@include smaller('md') {
+			flex-direction: column;
+		}
+	}
+
+	&__description {
+		align-items: center;
+		display: flex;
+		text-align: justify;
+	}
+
+	a {
+		text-decoration: none;
+		outline:none;
+
+		font-family: 'Inter', sans-serif;
+		font-style: normal;
+		font-weight: 700;
+		font-size: 12px;
+		line-height: 16px;
+		color: #3970AC;
+
+		&:focus    {
+			box-shadow: none;
+		}
+	}
+
+	&__btn {
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		padding: 8px 12px;
+		width: 139px;
+		height: 32px;
+
+		background: #F6F7F7;
+		border: 1px solid #3970AC;
+		border-radius: 6px;
+
+		flex: none;
+		order: 2;
+		flex-grow: 0;
+
+		&:hover {
+			background: #f0f0f1;
+			border-color: #0a4b78;
+			color: #0a4b78;
+		}
+
+		@include smaller('md'){
+			width: 100%;
+		}
+	}
+
+	.dashicons {
+		font-size: 1.1em;
+	}
+}
+
+.ssp-dynamo {
+	&__btn {
+		width: 108px;
+		@include smaller('md') {
+			width: 100%;
+		}
+	}
+
+	&__arrow-up {
+		position: relative;
+		left: -10px;
+		&:after {
+			content: '';
+			display: block;
+			background: url("../img/arrow-up.svg");
+			width: 11px;
+			height: 12px;
+			position: absolute;
+			right: -23px;
+			top: 2px;
+			opacity: 0.5;
+		}
+	}
+}
+
+.ssp-controls {
+	.dashicons-info {
+		position: relative;
+		font-size: 16px;
+		top: -3px;
+	}
+}
+
+#podmotor_account_api_token {
+	width: 100%;
+	min-width: 100%;
+	display: block;
+	margin-bottom: 8px;
+}
+
+.ssp-settings-integrations {
+	table label {
+		margin-top: 10px;
+		display: block;
+	}
+}
+
+.ssp-settings:not(.ssp-settings-extensions,.ssp-settings-integrations) {
+	background: $clr_white;
+	margin-top: 28px;
+	border-radius: 4px;
+	border: 1px solid #CBD5E1;
+	padding: 0 10px;
+
+	input {
+		&::placeholder {
+			color: $clr_gray_400;
+		}
+	}
+
+	h2 {
+		border-bottom: 1px solid #CBD5E1;
+		padding: 15px 10px 12px;
+		margin: 0 -10px 0 -10px;
+	}
+
+	table {
+		input.regular-text {
+			max-width: 90%;
+			background: #F1F5F9;
+		}
+	}
+
+	.loader {
+		position: relative;
+		&:after {
+			content: '';
+			display: block;
+			width: 21px;
+			height: 21px;
+			background: url(../img/loader.svg) no-repeat;
+			position: absolute;
+			right: -24px;
+			top: 2px;
+		}
+	}
+
+	.ssp-sync-msg {
+		font-size: 12px;
+		.sync-overview {
+			font-size: 14px;
+			display: block;
+			margin: 10px 0;
+		}
+
+		&.error .sync-overview {
+			color: $clr_red_400;
+		}
+
+		&.success .sync-overview {
+			color: $clr_green;
+		}
+	}
+}
+
+.ssp-main-settings {
+	.error {
+		color: $clr_red_400;
+	}
+
+	.hidden {
+		display: none;
+	}
+
+	.disconnect-castos {
+		margin-right: 8px;
+		vertical-align: middle;
+	}
+
+	&.tab-castos-hosting {
+		.loader {
+			position: relative;
+			&:after {
+				content: '';
+				display: block;
+				background: url(../img/loader2.svg) no-repeat;
+				position: absolute;
+				right: -50px;
+				top: -9px;
+				background-size: contain;
+				width: 44px;
+				height: 44px;
+			}
+		}
+	}
+}
+
+.connect-castos-message {
+	margin-left: 20px;
+}
+
+.ssp-sync-podcast {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 12px;
+}
+
+
+.ssp-sync-label {
+	border-radius: 50px;
+	margin-right: 5px;
+	position: relative;
+	background: #F5F5F5;
+	border: 1px solid $clr_blue_100;
+	font-family: Inter, sans-serif;
+	font-size: 12px;
+	font-weight: 500;
+	display: inline-block;
+	white-space: nowrap;
+	color: $clr_gray_400;
+	line-height: initial;
+	width: 25px;
+	height: 25px;
+
+	&.ssp-full-label {
+		width: initial;
+		padding: 0 10px 0 27px;
+		line-height: 23px;
+	}
+
+	a {
+		position: absolute;
+		width: 100%;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+	}
+
+	&:before {
+		content: '';
+		background-repeat: no-repeat;
+		background-position: center;
+		display: block;
+		position: absolute;
+		background-size: contain;
+		left: 0;
+		top: 0;
+		width: 25px;
+		height: 25px;
+	}
+
+	&.none {
+		color: $clr_gray_400;
+		&:before {
+			background-image: url(../img/status-none.svg);
+		}
+	}
+
+	&.syncing {
+		border: 1px solid var(--blue-200, #BFDFFE);
+		background: var(--blue-100, #DBECFE);
+		color: #1C51CF;
+		&:before {
+			background-image: url(../img/status-sending.svg);
+		}
+	}
+
+	&.synced {
+		border: 1px solid var(--emerald-200, #A7F3D0);
+		background: var(--emerald-100, #D1FAE5);
+		color: #047857;
+		&:before {
+			left: 5px;
+			top: 4px;
+			width: 16px;
+			height: 16px;
+			background-image: url(../img/status-success.svg);
+		}
+	}
+
+	&.failed, &.synced_with_errors {
+		background: var(--yellow-100, #FEF8D7);
+		color: #AF6A09;
+		border: 1px solid #e2cccc;
+
+		&:before {
+			left: 4px;
+			top: 4px;
+			width: 17px;
+			height: 16px;
+			background-image: url(../img/status-failed.svg);
+		}
+	}
+}
+
+.ssp-episode-sync-status {
+	margin-bottom: 20px;
+	&__data {
+		margin-top: 10px;
+	}
+}
+
+.column-ssp_sync_status, .widefat th.column-ssp_sync_status {
+	width: 50px;
+	text-align: center;
+}
+
+.column-ssp_cover {
+	width: 80px;
+}
+
+.ssp-external-feed-message {
+	h3 {
+		color: $clr_green;
+	}
+
+	&.import-error h3 {
+		color: $clr_red_400;
+	}
+}
+
+.episode-file-description {
+	&__filename {
+		font-weight: bold;
+		margin: 5px 0 10px;
+	}
+}
