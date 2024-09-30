@@ -27,7 +27,7 @@ With other podcast providers, you’ll need to make updates to your podcast’s 
 
 Getting started with Seriously Simple Podcasting is a seriously simple process. In just four steps, you’ll go from installing the plugin to your WordPress site to submitting a functioning RSS feed to every podcast directory.
 
-[youtube https://www.youtube.com/watch?v=sKjZTx02Ng0]
+[youtube https://www.youtube.com/watch?v=4Ekj4W9hljA]
 
 1. Install the Seriously Simple Podcasting plugin to your WordPress site.
 2. Begin the onboarding wizard, and create your first podcast. Here you’ll give details like the Podcast Title, Description, and upload your cover image.
