@@ -75,6 +75,7 @@ return array(
     'SeriouslySimplePodcasting\\Renderers\\Settings_Renderer' => $baseDir . '/php/classes/renderers/class-settings-renderer.php',
     'SeriouslySimplePodcasting\\Repositories\\Episode_Repository' => $baseDir . '/php/classes/repositories/class-episode-repository.php',
     'SeriouslySimplePodcasting\\Repositories\\Series_Repository' => $baseDir . '/php/classes/repositories/class-series-repository.php',
+    'SeriouslySimplePodcasting\\Repositories\\Settings_Config' => $baseDir . '/php/classes/repositories/class-settings-config.php',
     'SeriouslySimplePodcasting\\Rest\\Episodes_Rest_Controller' => $baseDir . '/php/classes/rest/class-episodes-rest-controller.php',
     'SeriouslySimplePodcasting\\Rest\\Rest_Api_Controller' => $baseDir . '/php/classes/rest/class-rest-api-controller.php',
     'SeriouslySimplePodcasting\\ShortCodes\\Player' => $baseDir . '/php/classes/shortcodes/class-player.php',
