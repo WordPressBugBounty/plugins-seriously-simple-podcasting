@@ -1310,6 +1310,8 @@ if ( ! function_exists( 'ssp_get_the_feed_item_content' ) ) {
 			$frontend_controller->restore_filters();
 		}
 
+		$content = apply_filters( 'ssp_feed_item_raw_content', $content, $post );
+
 		$content = strip_shortcodes( $content );
 		$content = preg_replace( '/<\/?iframe(.|\s)*?>/', '', $content );
 		$content = preg_replace( '/<style>(.|\s)*?<\/style>/', '', $content );
@@ -1723,6 +1725,26 @@ if ( ! function_exists( 'ssp_get_podcasts' ) ) {
 		$podcasts = get_terms( ssp_series_taxonomy(), array( 'hide_empty' => $hide_empty ) );
 
 		return is_array( $podcasts ) ? $podcasts : array();
+	}
+}
+
+/**
+ * Gets array of tags.
+ */
+if ( ! function_exists( 'ssp_get_tags' ) ) {
+	/**
+	 * Gets array of tags.
+	 *
+	 * @param bool $hide_empty
+	 *
+	 * @return WP_Term[]
+	 */
+	function ssp_get_tags( $hide_empty = false ) {
+		$tags = get_terms( 'post_tag', array(
+			'post_type' => ssp_post_types(),
+			'hide_empty' => $hide_empty,
+		) );
+		return is_array( $tags ) ? $tags : array();
 	}
 }
 

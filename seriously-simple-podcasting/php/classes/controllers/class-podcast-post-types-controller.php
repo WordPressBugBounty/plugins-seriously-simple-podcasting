@@ -110,6 +110,8 @@ class Podcast_Post_Types_Controller {
 
 		// Update podcast details to Castos when a post is updated or saved
 		add_action( 'save_post', array( $this, 'sync_episode' ), 20, 2 );
+		add_action( 'et_save_post', array( $this, 'sync_divi_episode' ) );
+		add_action( 'elementor/editor/after_save', array( $this, 'sync_elementor_episode' ) );
 
 		// Assign default series if no series was specified
 		add_action( 'save_post', array( $this, 'maybe_assign_default_series' ), 20 );
@@ -728,6 +730,73 @@ class Podcast_Post_Types_Controller {
 	}
 
 	/**
+	 * Syncs a Divi episode with Castos
+	 *
+	 * @since 3.8.0
+	 *
+	 * @param $post_id
+	 *
+	 * @return void
+	 */
+	public function sync_divi_episode( $post_id ) {
+		// Post type check
+		$post = get_post( $post_id );
+
+		if( 'publish' !== $post->post_status ){
+			return;
+		}
+
+		$podcast_post_types = ssp_post_types();
+
+		if ( ! in_array( $post->post_type, $podcast_post_types ) || ! ssp_is_connected_to_castos() ) {
+			return;
+		}
+
+		$get_divi_content = function ( $content, $post ) {
+			if ( ! $content ) {
+				$content = $post->post_content;
+			}
+			if ( false !== strpos( $content, '[et_pb_' ) ) {
+				$content = do_shortcode( $content );
+			}
+
+			return $content;
+		};
+
+		add_filter( 'ssp_feed_item_raw_content', $get_divi_content, 10, 2 );
+
+		$this->upload_episode_to_castos( $post );
+
+		remove_filter( 'ssp_feed_item_raw_content', $get_divi_content );
+	}
+
+	/**
+	 * Syncs an Elementor episode with Castos
+	 *
+	 * @since 3.8.0
+	 *
+	 * @param $post_id
+	 *
+	 * @return void
+	 */
+	public function sync_elementor_episode( $post_id ) {
+		// Post type check
+		$post = get_post( $post_id );
+
+		if( 'publish' !== $post->post_status ){
+			return;
+		}
+
+		$podcast_post_types = ssp_post_types();
+
+		if ( ! in_array( $post->post_type, $podcast_post_types ) || ! ssp_is_connected_to_castos() ) {
+			return;
+		}
+
+		$this->upload_episode_to_castos( $post );
+	}
+
+	/**
 	 * Send the podcast details to Castos
 	 *
 	 * @param int $id
@@ -767,11 +836,26 @@ class Podcast_Post_Types_Controller {
 
 		$this->episode_repository->delete_episode_sync_error( $post->ID );
 
+		$this->upload_episode_to_castos( $post );
+	}
+
+
+	/**
+	 * Uploads an episode to Castos and updates the episode's sync post metadata.
+	 * Schedules a sync by cron in case of a sync error.
+	 *
+	 * @since 3.8.0
+	 *
+	 * @param $post
+	 *
+	 * @return void
+	 */
+	protected function upload_episode_to_castos( $post ) {
 		$response = $this->castos_handler->upload_episode_to_castos( $post );
 
 		if ( $response->success ) {
 			if ( $response->castos_episode_id ) {
-				update_post_meta( $id, 'podmotor_episode_id', $response->castos_episode_id );
+				update_post_meta( $post->ID, 'podmotor_episode_id', $response->castos_episode_id );
 			}
 			$this->admin_notices_handler->add_flash_notice(
 				$response->message,
@@ -779,7 +863,7 @@ class Podcast_Post_Types_Controller {
 			);
 
 			// if uploading was scheduled before, lets unschedule it
-			delete_post_meta( $id, 'podmotor_schedule_upload' );
+			delete_post_meta( $post->ID, 'podmotor_schedule_upload' );
 			$this->episode_repository->update_episode_sync_status( $post->ID, Sync_Status::SYNC_STATUS_SYNCED );
 			$this->episode_repository->delete_sync_error( $post->ID );
 		} else {
