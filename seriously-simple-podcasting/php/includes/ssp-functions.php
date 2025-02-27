@@ -1722,6 +1722,8 @@ if ( ! function_exists( 'ssp_get_podcasts' ) ) {
 	 * @return WP_Term[]
 	 */
 	function ssp_get_podcasts( $hide_empty = false ) {
+		$cache_key = 'ssp_podcasts';
+		$cache_group = 'ssp';
 		$podcasts = get_terms( ssp_series_taxonomy(), array( 'hide_empty' => $hide_empty ) );
 
 		return is_array( $podcasts ) ? $podcasts : array();
@@ -1740,11 +1742,22 @@ if ( ! function_exists( 'ssp_get_tags' ) ) {
 	 * @return WP_Term[]
 	 */
 	function ssp_get_tags( $hide_empty = false ) {
-		$tags = get_terms( 'post_tag', array(
-			'post_type' => ssp_post_types(),
+		$cache_key = 'ssp_tags';
+		$cache_group = 'ssp';
+		$tags      = wp_cache_get( $cache_key, $cache_group );
+
+		if ( $tags ) {
+			return $tags;
+		}
+
+		$tags = get_terms( 'post_tag', [
+			'post_type'  => ssp_post_types(),
 			'hide_empty' => $hide_empty,
-		) );
-		return is_array( $tags ) ? $tags : array();
+		] );
+
+		wp_cache_set( $cache_key, $tags, $cache_group, MINUTE_IN_SECONDS );
+
+		return is_array( $tags ) ? $tags : [];
 	}
 }
 
@@ -1954,5 +1967,83 @@ if ( ! function_exists( 'ssp_series_passthrough_required' ) ) {
 		$required = 'on' === ssp_get_option( 'enable_ads', 'off', $series_id );
 
 		return apply_filters( 'ssp_series_passthrough_required', $required, $series_id );
+	}
+}
+
+
+if ( ! function_exists( 'ssp_iso_duration' ) ) {
+	/**
+	 * Converts duration string to the ISO 8601 duration format
+	 *
+	 * @param string $duration
+	 *
+	 * @return string
+	 */
+	function ssp_iso_duration( $duration ) {
+		$time = trim( $duration );
+
+		// Check if the input is a valid time format (HH:MM:SS, MM:SS, or H:MM:SS)
+		if ( ! preg_match( '/^(\d{1,2}:)?\d{1,2}:\d{1,2}$/', $duration ) ) {
+			return 'PT0H0M0S';
+		}
+
+		$parts = explode( ':', $duration );
+		$count = count( $parts );
+
+		// Handle different time formats
+		if ( $count === 3 ) {
+			list( $hours, $minutes, $seconds ) = $parts;
+		} elseif ( $count === 2 ) {
+			$hours = 0;
+			list( $minutes, $seconds ) = $parts;
+		} else {
+			return ''; // Invalid format
+		}
+
+		// Convert to integers
+		$hours   = (int) $hours;
+		$minutes = (int) $minutes;
+		$seconds = (int) $seconds;
+
+		return sprintf( 'PT%dH%dM%dS', $hours, $minutes, $seconds );
+	}
+}
+
+
+if ( ! function_exists( 'ssp_duration_seconds' ) ) {
+	/**
+	 * Converts duration string to the ISO 8601 duration format
+	 *
+	 * @param string $duration
+	 *
+	 * @return int
+	 */
+	function ssp_duration_seconds( $duration ) {
+		if ( ! is_string( $duration ) || empty( trim( $duration ) ) ) {
+			return 0; // Return 0 for empty or non-string values
+		}
+
+		$duration = trim( $duration );
+
+		// Match valid time format: HH:MM:SS, MM:SS, or SS
+		if ( ! preg_match( '/^(\d{1,2}:)?\d{1,2}:\d{1,2}$|^\d+$/', $duration ) ) {
+			return 0; // Return 0 if format is invalid
+		}
+
+		$time_parts = explode( ':', $duration );
+		$time_parts = array_reverse( $time_parts ); // Reverse to handle flexible formats
+
+		$seconds = 0;
+		if ( isset( $time_parts[0] ) && is_numeric( $time_parts[0] ) ) {
+			$seconds += (int) $time_parts[0]; // Seconds
+		}
+		if ( isset( $time_parts[1] ) && is_numeric( $time_parts[1] ) ) {
+			$seconds += (int) $time_parts[1] * MINUTE_IN_SECONDS; // Minutes
+		}
+		if ( isset( $time_parts[2] ) && is_numeric( $time_parts[2] ) ) {
+			$seconds += (int) $time_parts[2] * HOUR_IN_SECONDS; // Hours
+		}
+
+		return $seconds;
 	}
 }

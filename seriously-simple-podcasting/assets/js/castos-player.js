@@ -61,8 +61,10 @@ docReady(function() {
 			toggleTimeout = setTimeout(function(){
 				if (audio.paused) {
 					playAudio();
+					pauseBtn.focus();
 				} else {
 					pauseAudio();
+					playBtn.focus();
 				}
 			}, 100);
 		}
@@ -81,19 +83,47 @@ docReady(function() {
 			if (audio.paused) {
 				pauseBtn.classList.add('hide');
 				playBtn.classList.remove('hide');
+				playBtn.setAttribute('aria-pressed', 'false');
+				pauseBtn.setAttribute('aria-pressed', 'true');
 			} else {
 				pauseBtn.classList.remove('hide');
 				playBtn.classList.add('hide');
+				playBtn.setAttribute('aria-pressed', 'true');
+				pauseBtn.setAttribute('aria-pressed', 'false');
 			}
 		}
 
 		function updateDuration() {
-			duration.innerHTML = formatTime(audio.duration);
+			duration.innerHTML = formatTime( audio.duration );
+			duration.setAttribute( 'datetime', durationToISO( audio.duration ) );
+			progress.setAttribute( 'aria-valuemax', Math.floor( audio.duration ) );
+		}
+
+		function durationToISO( seconds ) {
+			const hours = Math.floor( seconds / 3600 );
+			const minutes = Math.floor( (seconds % 3600) / 60 );
+			const remainingSeconds = Math.floor( seconds % 60 );
+
+			let isoString = 'PT';
+
+			if ( hours > 0 ) {
+				isoString += hours + 'H';
+			}
+
+			if ( minutes > 0 || hours > 0 ) {
+				isoString += minutes + 'M';
+			}
+
+			isoString += remainingSeconds + 'S';
+
+			return isoString;
 		}
 
 		function handleProgress() {
 			let percent = audio.currentTime / audio.duration * 100;
 			progressBar.style.flexBasis = percent + '%';
+			timer.innerHTML = formatTime( audio.currentTime );
+			progress.setAttribute( 'aria-valuenow', Math.floor( audio.currentTime ) );
 		}
 
 		function scrub(e) {
@@ -115,10 +145,18 @@ docReady(function() {
 		}
 
 		function handleSpeedChange() {
-			let newSpeed = this.dataset.speed < 2 ? (parseFloat(this.dataset.speed) + 0.2).toFixed(1) : 0.4;
-			speedBtn.setAttribute('data-speed', newSpeed);
-			speedBtn.innerHTML = newSpeed + 'x';
-			audio.playbackRate = newSpeed;
+			let newSpeed = this.dataset.speed < 2 ? (parseFloat( this.dataset.speed ) + 0.2).toFixed( 1 ) : 0.4;
+			setSpeed( newSpeed );
+		}
+
+		function setSpeed(speed){
+			if( speed < 0.4 || speed > 2 ){
+				speed = 1;
+			}
+
+			speedBtn.setAttribute('data-speed', speed);
+			speedBtn.innerHTML = speed + 'x';
+			audio.playbackRate = speed;
 		}
 
 		function handleWaiting() {
@@ -138,10 +176,6 @@ docReady(function() {
 			audio.addEventListener('playing', syncPlayButton);
 			audio.addEventListener('playing', updateDuration);
 			audio.addEventListener('timeupdate', handleProgress);
-
-			audio.ontimeupdate = function () {
-				timer.innerHTML = formatTime(audio.currentTime);
-			};
 
 			audio.onended = function () {
 				hideElement(pauseBtn);
@@ -394,28 +428,34 @@ docReady(function() {
 		}
 
 		function initKeyboardListeners() {
-			document.addEventListener('keyup', (event) => {
-
+			document.addEventListener( 'keydown', ( e ) => {
 				// If the Space button was pressed and any of the player element is focused, toggle playback.
-				if (!document.activeElement.closest('.castos-player')) {
+				if ( ! document.activeElement.closest( '.castos-player' ) ) {
 					return;
 				}
 
-				if ('ArrowRight' === event.code) {
+				if ( 'ArrowRight' === e.code ) {
+					e.preventDefault();
 					audio.currentTime += 10;
-					return;
-				}
-
-				if ('ArrowLeft' === event.code) {
+				} else if ( 'ArrowLeft' === e.code ) {
+					e.preventDefault();
 					audio.currentTime -= 10;
-					return;
+				} else if ( 'Space' === e.code ) {
+					e.preventDefault();
+					togglePlayback();
+				} else if ( 'm' === e.key || 'M' === e.key ) {
+					volumeBtn.dispatchEvent( new Event( 'click' ) );
+					volumeBtn.focus();
+				} else if ( e.shiftKey && e.code === 'Period' ) { // Increase speed (up to 2x)
+					let speed = speedBtn.dataset.speed < 2 ? (parseFloat( speedBtn.dataset.speed ) + 0.2) : 2.0;
+					setSpeed( speed.toFixed( 1 ) );
+				} else if ( e.shiftKey && e.code === 'Comma' ) { // Decrease speed (down to 0.4x)
+					let speed = speedBtn.dataset.speed > 0.4 ? (parseFloat( speedBtn.dataset.speed ) - 0.2) : 0.4;
+					setSpeed( speed.toFixed( 1 ) );
+				} else if ( e.shiftKey && e.code === 'Digit0' ) { // Reset speed to 1x
+					setSpeed( 1 );
 				}
-
-				if ('Space' === event.code) {
-					// Fire togglePlayback() via event to prevent the double toggling
-					playBtn.dispatchEvent(new Event('click'));
-				}
-			});
+			} );
 		}
 
 		function init() {

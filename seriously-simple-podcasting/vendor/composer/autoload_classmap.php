@@ -31,6 +31,8 @@ return array(
     'SeriouslySimplePodcasting\\Entities\\API_Podcast' => $baseDir . '/php/classes/entities/class-api-podcast.php',
     'SeriouslySimplePodcasting\\Entities\\Abstract_API_Entity' => $baseDir . '/php/classes/entities/class-abstract-api-entity.php',
     'SeriouslySimplePodcasting\\Entities\\Abstract_Entity' => $baseDir . '/php/classes/entities/class-abstract-entity.php',
+    'SeriouslySimplePodcasting\\Entities\\Available_Podcasts_Attribute' => $baseDir . '/php/classes/entities/class-available-podcasts-attribute.php',
+    'SeriouslySimplePodcasting\\Entities\\Available_Tags_Attribute' => $baseDir . '/php/classes/entities/class-available-tags-attribute.php',
     'SeriouslySimplePodcasting\\Entities\\Castos_File_Data' => $baseDir . '/php/classes/entities/class-castos-file-data.php',
     'SeriouslySimplePodcasting\\Entities\\Castos_Response' => $baseDir . '/php/classes/entities/class-castos-response.php',
     'SeriouslySimplePodcasting\\Entities\\Castos_Response_Episode' => $baseDir . '/php/classes/entities/class-castos-response-episode.php',

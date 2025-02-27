@@ -24,8 +24,8 @@
  **/
 
 ?>
-<div id="<?php echo esc_attr( $player_id ); ?>" class="castos-player <?php echo esc_attr( $player_mode ) ?>-mode <?php echo esc_attr( $class ) ?>"
-	 data-episode="<?php echo esc_attr( $episode_id ) ?>" data-player_id="<?php echo esc_attr( $player_id ); ?>">
+<div id="<?php echo esc_attr( $player_id ); ?>" class="castos-player <?php echo esc_attr( $player_mode ) ?>-mode <?php echo esc_attr( $class )
+     ?>" tabindex="0" data-episode="<?php echo esc_attr( $episode_id ) ?>" data-player_id="<?php echo esc_attr( $player_id ); ?>">
 	<div class="player">
 		<div class="player__main">
 			<div class="player__artwork player__artwork-<?php echo esc_attr( $episode_id ) ?>">
@@ -42,39 +42,53 @@
 				</div>
 				<div class="play-progress">
 					<div class="play-pause-controls">
-						<button title="<?php esc_attr_e( 'Play', 'seriously-simple-podcasting' ) ?>" class="play-btn">
-							<span class="screen-reader-text"><?php esc_attr_e( 'Play Episode', 'seriously-simple-podcasting' ) ?></span>
+						<button title="<?php esc_attr_e( 'Play', 'seriously-simple-podcasting' )
+						?>" aria-label="<?php esc_attr_e( 'Play Episode', 'seriously-simple-podcasting' )
+						?>" aria-pressed="false" class="play-btn">
+							<span class="screen-reader-text"><?php
+								esc_attr_e( 'Play Episode', 'seriously-simple-podcasting' )
+								?></span>
 						</button>
-						<button title="<?php esc_attr_e( 'Pause', 'seriously-simple-podcasting' ) ?>" class="pause-btn hide">
-							<span class="screen-reader-text"><?php esc_attr_e( 'Pause Episode', 'seriously-simple-podcasting' ) ?></span>
+						<button title="<?php esc_attr_e( 'Pause', 'seriously-simple-podcasting' )
+						?>" aria-label="<?php esc_attr_e( 'Pause Episode', 'seriously-simple-podcasting' )
+						?>" aria-pressed="false" class="pause-btn hide">
+							<span class="screen-reader-text"><?php
+								esc_attr_e( 'Pause Episode', 'seriously-simple-podcasting' )
+								?></span>
 						</button>
-						<img src="<?php echo SSP_PLUGIN_URL ?>assets/css/images/player/images/icon-loader.svg" alt="<?php esc_attr_e( 'Loading', 'seriously-simple-podcasting' ) ?>" class="ssp-loader hide"/>
+						<img src="<?php echo SSP_PLUGIN_URL ?>assets/css/images/player/images/icon-loader.svg" alt="<?php
+						esc_attr_e( 'Loading', 'seriously-simple-podcasting' ) ?>" class="ssp-loader hide"/>
 					</div>
 					<div>
-						<audio preload="none" class="clip clip-<?php echo $episode_id ?>">
+						<audio preload="none" class="clip clip-<?php esc_attr_e( $episode_id ) ?>">
 							<source src="<?php echo $audio_file ?>">
 						</audio>
-						<div class="ssp-progress" role="progressbar" title="<?php esc_attr_e( 'Seek', 'seriously-simple-podcasting' ) ?>">
+						<div class="ssp-progress" role="progressbar" title="<?php
+						esc_attr_e( 'Seek', 'seriously-simple-podcasting' )
+						?>" aria-valuenow="<?php echo 0
+						?>" aria-valuemin="<?php echo 0
+						?>" aria-valuemax="<?php echo ssp_duration_seconds( $duration )
+						?>">
 							<span class="progress__filled"></span>
 						</div>
 						<div class="ssp-playback playback">
 							<div class="playback__controls">
-								<button class="player-btn__volume" title="<?php esc_attr_e( 'Mute/Unmute', 'seriously-simple-podcasting' ) ?>">
+								<button class="player-btn player-btn__volume" title="<?php esc_attr_e( 'Mute/Unmute', 'seriously-simple-podcasting' ) ?>">
 									<span class="screen-reader-text"><?php esc_attr_e( 'Mute/Unmute Episode', 'seriously-simple-podcasting' ) ?></span>
 								</button>
-								<button data-skip="-10" class="player-btn__rwd" title="<?php esc_attr_e( 'Rewind 10 seconds', 'seriously-simple-podcasting' ) ?>">
+								<button data-skip="-10" class="player-btn player-btn__rwd" title="<?php esc_attr_e( 'Rewind 10 seconds', 'seriously-simple-podcasting' ) ?>">
 									<span class="screen-reader-text"><?php esc_attr_e( 'Rewind 10 Seconds', 'seriously-simple-podcasting' ) ?></span>
 								</button>
-								<button data-speed="1" class="player-btn__speed" title="<?php esc_attr_e( 'Playback Speed', 'seriously-simple-podcasting' ) ?>">1x</button>
-								<button data-skip="30" class="player-btn__fwd" title="<?php esc_attr_e( 'Fast Forward 30 seconds', 'seriously-simple-podcasting' ) ?>">
-									<span class="screen-reader-text"><?php esc_attr_e( 'Fast Forward 30 seconds', 'seriously-simple-podcasting' ) ?></span>
+								<button data-speed="1" class="player-btn player-btn__speed" title="<?php esc_attr_e( 'Playback Speed', 'seriously-simple-podcasting' ) ?>" aria-label="<?php esc_attr_e( 'Playback Speed', 'seriously-simple-podcasting' ) ?>">1x</button>
+								<button data-skip="10" class="player-btn player-btn__fwd" title="<?php esc_attr_e( 'Fast Forward 10 seconds', 'seriously-simple-podcasting' ) ?>">
+									<span class="screen-reader-text"><?php esc_attr_e( 'Fast Forward 10 seconds', 'seriously-simple-podcasting' ) ?></span>
 								</button>
 							</div>
 							<div class="playback__timers">
 								<time class="ssp-timer">00:00</time>
 								<span>/</span>
 								<!-- We need actual duration here from the server -->
-								<time class="ssp-duration"><?php echo esc_html( $duration ) ?></time>
+								<time class="ssp-duration" datetime="<?php echo ssp_iso_duration( $duration ) ?>"><?php echo esc_html( $duration ) ?></time>
 							</div>
 						</div>
 					</div>
@@ -113,12 +127,12 @@
 								<?php endif ?>
 							<?php endforeach ?>
 						</div>
-						<div class="player-panel-row" area-label="RSS Feed URL">
+						<div class="player-panel-row" aria-label="RSS Feed URL">
 							<div class="title"><?php esc_attr_e( 'RSS Feed', 'seriously-simple-podcasting' ) ?></div>
 							<div>
 								<input value="<?php echo esc_attr( $feed_url ) ?>" class="input-rss input-rss-<?php echo esc_attr( $episode_id ) ?>" title="<?php esc_attr_e( 'RSS Feed URL', 'seriously-simple-podcasting' ) ?>" readonly />
 							</div>
-							<button class="copy-rss copy-rss-<?php echo esc_attr( $episode_id ) ?>" title="<?php esc_attr_e( 'Copy RSS Feed URL', 'seriously-simple-podcasting' ) ?>"></button>
+							<button class="copy-rss copy-rss-<?php echo esc_attr( $episode_id ) ?>" title="<?php esc_attr_e( 'Copy RSS Feed URL', 'seriously-simple-podcasting' ) ?>" aria-label="<?php esc_attr_e( 'Copy RSS Feed URL', 'seriously-simple-podcasting' ) ?>"></button>
 						</div>
 					</div>
 				</div>
@@ -155,7 +169,7 @@
 						<div>
 							<input value="<?php echo esc_attr( $current_url ) ?>" class="input-link input-link-<?php echo esc_attr( $episode_id ) ?>" title="<?php esc_attr_e( 'Episode URL', 'seriously-simple-podcasting' ) ?>" readonly />
 						</div>
-						<button class="copy-link copy-link-<?php echo esc_attr( $episode_id ) ?>" title="<?php esc_attr_e( 'Copy Episode URL', 'seriously-simple-podcasting' ) ?>" readonly=""></button>
+						<button class="copy-link copy-link-<?php echo esc_attr( $episode_id ) ?>" title="<?php esc_attr_e( 'Copy Episode URL', 'seriously-simple-podcasting' ) ?>" aria-label="<?php esc_attr_e( 'Copy Episode URL', 'seriously-simple-podcasting' ) ?>" readonly=""></button>
 					</div>
 					<div class="player-panel-row">
 						<div class="title">
@@ -166,7 +180,7 @@
 								   title="<?php esc_attr_e( 'Embed Code', 'seriously-simple-podcasting' ) ?>"
 								   class="input-embed input-embed-<?php echo $episode_id ?>" readonly/>
 						</div>
-						<button class="copy-embed copy-embed-<?php echo esc_attr( $episode_id ) ?>" title="<?php esc_attr_e( 'Copy Embed Code', 'seriously-simple-podcasting' ) ?>"></button>
+						<button class="copy-embed copy-embed-<?php echo esc_attr( $episode_id ) ?>" title="<?php esc_attr_e( 'Copy Embed Code', 'seriously-simple-podcasting' ) ?>" aria-label="<?php esc_attr_e( 'Copy Embed Code', 'seriously-simple-podcasting' ) ?>"></button>
 					</div>
 				</div>
 			<?php endif ?>
