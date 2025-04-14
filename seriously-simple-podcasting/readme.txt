@@ -4,7 +4,7 @@ Tags: podcast, audio, itunes, podcasting, playlist
 Requires at least: 5.3
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 3.9.0
+Stable tag: 3.10.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -164,6 +164,17 @@ You can find complete user and developer documentation (along with the FAQs) on 
 15. View podcast episodes in the At A Glance widget on the main WordPress dashboard.
 
 == Changelog ==
+
+= 3.10.0 =
+2025-04-14
+[UPDATE] Added a listener to update Castos subscriptions when a WooCommerce Memberships customer changes their email.
+[UPDATE] Added a setting to limit the maximum number of episodes in the feed.
+[UPDATE] Improved support for cloning custom post types using duplicator plugins.
+[UPDATE] Added the ability to modify the series taxonomy programmatically.
+[FIX] Prevented redundant sync errors when saving episodes without a file.
+[FIX] Fixed jsonSerialize() return type error.
+[FIX] Fixed podcast categories not displaying correctly in the WordPress API.
+[FIX] Security improvements.
 
 = 3.9.0 =
 2025-02-27
