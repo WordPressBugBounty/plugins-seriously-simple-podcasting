@@ -4,7 +4,7 @@ Tags: podcast, audio, itunes, podcasting, playlist
 Requires at least: 5.3
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.10.1
+Stable tag: 3.10.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -156,7 +156,7 @@ You can find complete user and developer documentation (along with the FAQs) on 
 7. Customize the embedded media player settings to match your brand colors and pick the preferred location.
 8. Example of the HTML5 player within a podcast post from Rolf Pott's podcast, Deviate.
 9. Example of HTML5 player with a collection page featuring every episode from Rolf Pott's podcast, Deviate.
-10. Example of a styled RSS feed when viewed in a browswer.
+10. Example of a styled RSS feed when viewed in a browser.
 11. Automatically sync Castos accounts with Seriously Simple Podcasting in a few clicks.
 12. Import RSS feeds from any podcast hosting provider using Seriously Simple Podcasting.
 13. Customize on which post type to enable podcasting features.
@@ -164,6 +164,14 @@ You can find complete user and developer documentation (along with the FAQs) on 
 15. View podcast episodes in the At A Glance widget on the main WordPress dashboard.
 
 == Changelog ==
+
+= 3.10.2 =
+2025-05-19
+[FIX] Improved protection of private episodes with Paid Memberships Pro integration.
+[FIX] Resolved infinite feed loop issue when using the Polylang plugin.
+[FIX] Fixed issue where the video player displayed only a file link.
+[FIX] Addressed episode schema validation warnings.
+[FIX] Security improvements.
 
 = 3.10.1 =
 2025-04-24
