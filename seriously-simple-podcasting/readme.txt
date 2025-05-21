@@ -4,7 +4,7 @@ Tags: podcast, audio, itunes, podcasting, playlist
 Requires at least: 5.3
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.10.2
+Stable tag: 3.10.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -164,6 +164,11 @@ You can find complete user and developer documentation (along with the FAQs) on 
 15. View podcast episodes in the At A Glance widget on the main WordPress dashboard.
 
 == Changelog ==
+
+= 3.10.3 =
+2025-05-21
+[FIX] Fixed redirection from the old default feed URL.
+[FIX] Resolved feed issues caused by the Polylang plugin.
 
 = 3.10.2 =
 2025-05-19

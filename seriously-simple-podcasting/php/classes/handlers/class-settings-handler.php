@@ -304,7 +304,7 @@ class Settings_Handler implements Service {
 
 		if ( 'data_description' === $option && ! isset( $data ) ) {
 			$description = get_term_field( 'description', $series_id, ssp_series_taxonomy(), 'edit' );
-			$data        = $description ?: null;
+			$data        = is_string( $description ) ? $description : null;
 		}
 
 		// For empty values, propagate some settings from the default feed

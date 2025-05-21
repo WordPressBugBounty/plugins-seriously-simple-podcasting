@@ -117,14 +117,17 @@ class Feed_Handler implements Service {
 	 * */
 	public function redirect_default_feed(){
 		$default_series_id = ssp_get_option( 'default_series' );
-		if ( $default_series_id ) {
-			$term = get_term_by( 'id', $default_series_id, ssp_series_taxonomy() );
-			if ( $term && $term->term_id !== intval( $default_series_id )  ) {
-				$url = ssp_get_feed_url( $term->slug );
-				wp_redirect( $url );
-				exit();
-			}
+		if ( ! $default_series_id ) {
+			return;
 		}
+		$default_term = get_term_by( 'id', $default_series_id, ssp_series_taxonomy() );
+		if ( ! $default_term ) {
+			return;
+		}
+
+		$url = ssp_get_feed_url( $default_term->slug );
+		wp_redirect( $url );
+		exit();
 	}
 
 	/**
@@ -315,7 +318,7 @@ class Feed_Handler implements Service {
 	public function get_podcast_description( $series_id ) {
 		$description = $this->settings_handler->get_feed_option( 'data_description', $series_id, get_bloginfo( 'description' ) );
 
-		$podcast_description = mb_substr( strip_tags( $description ), 0, 3999 );
+		$podcast_description = mb_substr( strip_tags( strval( $description ) ), 0, 3999 );
 
 		return apply_filters( 'ssp_feed_description', $podcast_description, $series_id );
 	}

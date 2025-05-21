@@ -148,6 +148,8 @@ class Feed_Controller {
 	 */
 	public function get_podcast_feed( $series_id = null ) {
 
+		$this->disable_polylang_queries();
+
 		do_action( 'ssp_before_feed' );
 
 		$this->feed_handler->suppress_errors();
@@ -250,6 +252,23 @@ class Feed_Controller {
 		do_action( 'ssp_after_feed' );
 
 		return apply_filters( 'ssp_podcast_feed', $feed, $feed_data );
+	}
+
+	/**
+	 * Since Polylang changes the queries and breaks everything,
+	 * we need to remove its query filters and actions.
+	 *
+	 * @return void
+	 */
+	protected function disable_polylang_queries(){
+		global $polylang;
+		if( ! $polylang instanceof \PLL_Frontend ){
+			return;
+		}
+
+		remove_filter( 'terms_clauses', array( $polylang->terms, 'terms_clauses' ) );
+		remove_action( 'parse_query', array( $polylang->auto_translate, 'translate_included_ids_in_query' ), 100 );
+		remove_action( 'parse_query', array( $polylang, 'parse_query' ), 6 );
 	}
 
 	/**

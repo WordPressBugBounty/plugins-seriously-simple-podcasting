@@ -591,14 +591,18 @@ class Paid_Memberships_Pro_Integrator extends Abstract_Integrator {
 		if ( empty( $series_slug ) ) {
 			return;
 		}
-		$series = get_term_by( 'slug', $this->feed_handler->get_series_slug(), ssp_series_taxonomy() );
+		$series_term = get_term_by( 'slug', $this->feed_handler->get_series_slug(), ssp_series_taxonomy() );
 
-		$series_levels = $this->get_series_level_ids( $series->term_id );
+		if ( ! $series_term ) {
+			return;
+		}
+
+		$series_levels = $this->get_series_level_ids( $series_term->term_id );
 		$has_access = $this->has_access( wp_get_current_user(), $series_levels );
 
 		if ( ! $has_access ) {
 			$description = wp_strip_all_tags( pmpro_get_no_access_message( '', $series_levels ) );
-			$this->feed_handler->render_feed_no_access( $series->term_id, $description );
+			$this->feed_handler->render_feed_no_access( $series_term->term_id, $description );
 			exit();
 		}
 	}
