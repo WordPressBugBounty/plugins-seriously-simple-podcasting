@@ -86,6 +86,7 @@ return array(
     'SeriouslySimplePodcasting\\ShortCodes\\Podcast_Playlist' => $baseDir . '/php/classes/shortcodes/class-podcast-playlist.php',
     'SeriouslySimplePodcasting\\ShortCodes\\Shortcode' => $baseDir . '/php/classes/shortcodes/interface-shortcode.php',
     'SeriouslySimplePodcasting\\Traits\\Elementor_Widget_Helper' => $baseDir . '/php/classes/traits/trait-elementor-widget-helper.php',
+    'SeriouslySimplePodcasting\\Traits\\Logger' => $baseDir . '/php/classes/traits/trait-logger.php',
     'SeriouslySimplePodcasting\\Traits\\Singleton' => $baseDir . '/php/classes/traits/trait-singleton.php',
     'SeriouslySimplePodcasting\\Traits\\URL_Helper' => $baseDir . '/php/classes/traits/trait-url-helper.php',
     'SeriouslySimplePodcasting\\Traits\\Useful_Variables' => $baseDir . '/php/classes/traits/trait-useful-variables.php',

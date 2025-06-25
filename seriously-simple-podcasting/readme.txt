@@ -4,7 +4,7 @@ Tags: podcast, audio, itunes, podcasting, playlist
 Requires at least: 5.3
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.10.3
+Stable tag: 3.10.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -97,7 +97,7 @@ Feature embedded video players within any podcast post.
 Understand how your podcast is performing with our free Seriously Simple Stats add-on.
 
 - Install [Seriously Simple Stats](https://wordpress.org/plugins/seriously-simple-stats/) to access listener statistics for free. Track total listens per episode, by date range, and by listening sources.
-- Connect 3rd party analytics platforms like Podtrac or Chartable.
+- Connect 3rd party analytics platforms like Podtrac.
 - With Castos, view advanced analytics by geographic location, device, and listening platform plus total unique subscribers. Also access your Spotify-specific data from your dashboard for a holistic view of your podcast’s performance.
 
 ***SIMPLIFIED IMPORTS, MIGRATIONS, AND REDIRECTS***
@@ -164,6 +164,15 @@ You can find complete user and developer documentation (along with the FAQs) on 
 15. View podcast episodes in the At A Glance widget on the main WordPress dashboard.
 
 == Changelog ==
+
+= 3.10.4 =
+2025-06-25
+[FIX] Improved file download handling to prevent issues with large files.
+[FIX] Updated fast forward button to skip 30 seconds.
+[FIX] Removed deprecated Chartable integration.
+[FIX] Resolved visual bug on Step 4 of onboarding.
+[FIX] iTunes fields are now enabled by default.
+[FIX] Fixed cover image upload issue during onboarding.
 
 = 3.10.3 =
 2025-05-21

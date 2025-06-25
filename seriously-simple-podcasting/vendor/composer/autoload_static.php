@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitff56c6e06d011a11857189282ed20165
+class ComposerStaticInit28de7d8ff03780d804c91a91b91fae1f
 {
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
@@ -87,6 +87,7 @@ class ComposerStaticInitff56c6e06d011a11857189282ed20165
         'SeriouslySimplePodcasting\\ShortCodes\\Podcast_Playlist' => __DIR__ . '/../..' . '/php/classes/shortcodes/class-podcast-playlist.php',
         'SeriouslySimplePodcasting\\ShortCodes\\Shortcode' => __DIR__ . '/../..' . '/php/classes/shortcodes/interface-shortcode.php',
         'SeriouslySimplePodcasting\\Traits\\Elementor_Widget_Helper' => __DIR__ . '/../..' . '/php/classes/traits/trait-elementor-widget-helper.php',
+        'SeriouslySimplePodcasting\\Traits\\Logger' => __DIR__ . '/../..' . '/php/classes/traits/trait-logger.php',
         'SeriouslySimplePodcasting\\Traits\\Singleton' => __DIR__ . '/../..' . '/php/classes/traits/trait-singleton.php',
         'SeriouslySimplePodcasting\\Traits\\URL_Helper' => __DIR__ . '/../..' . '/php/classes/traits/trait-url-helper.php',
         'SeriouslySimplePodcasting\\Traits\\Useful_Variables' => __DIR__ . '/../..' . '/php/classes/traits/trait-useful-variables.php',
@@ -100,7 +101,7 @@ class ComposerStaticInitff56c6e06d011a11857189282ed20165
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInitff56c6e06d011a11857189282ed20165::$classMap;
+            $loader->classMap = ComposerStaticInit28de7d8ff03780d804c91a91b91fae1f::$classMap;
 
         }, null, ClassLoader::class);
     }
