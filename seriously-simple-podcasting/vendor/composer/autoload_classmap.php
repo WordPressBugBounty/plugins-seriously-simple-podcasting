@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'SeriouslySimplePodcasting\\Controllers\\Admin_Controller' => $baseDir . '/php/classes/controllers/class-admin-controller.php',
     'SeriouslySimplePodcasting\\Controllers\\Ads_Controller' => $baseDir . '/php/classes/controllers/class-ads-controller.php',
     'SeriouslySimplePodcasting\\Controllers\\App_Controller' => $baseDir . '/php/classes/controllers/class-app-controller.php',
     'SeriouslySimplePodcasting\\Controllers\\Assets_Controller' => $baseDir . '/php/classes/controllers/class-assets-controller.php',

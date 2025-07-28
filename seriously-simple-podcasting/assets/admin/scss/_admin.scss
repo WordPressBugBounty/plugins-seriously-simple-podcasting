@@ -156,9 +156,9 @@ textarea#episode_embed_code {
 	&__container {
 		display: flex;
 		justify-content: center;
-		padding: 8px;
+		padding: 20px;
 		gap: 16px;
-		background: #F6F7F7;
+		background: $clr_gray_100;
 		border-radius: 8px;
 		align-items: center;
 
@@ -168,7 +168,7 @@ textarea#episode_embed_code {
 
 		&:before {
 			content: '';
-			background: url('../img/stars.svg');
+			background: url('../img/stars-purple.svg');
 			width: 22px;
 			height: 22px;
 
@@ -185,7 +185,6 @@ textarea#episode_embed_code {
 	&__description {
 		align-items: center;
 		display: flex;
-		text-align: justify;
 	}
 
 	a {
@@ -198,6 +197,7 @@ textarea#episode_embed_code {
 		font-size: 12px;
 		line-height: 16px;
 		color: #3970AC;
+		
 
 		&:focus    {
 			box-shadow: none;
@@ -214,18 +214,17 @@ textarea#episode_embed_code {
 		width: 139px;
 		height: 32px;
 
-		background: #F6F7F7;
-		border: 1px solid #3970AC;
+		border: 1px solid $clr_blue_400;
 		border-radius: 6px;
 
 		flex: none;
 		order: 2;
 		flex-grow: 0;
 
+		transition: 0.3s;
+
 		&:hover {
-			background: #f0f0f1;
-			border-color: #0a4b78;
-			color: #0a4b78;
+			background: lighten($clr_gray_100, 5%);
 		}
 
 		@include smaller('md'){
@@ -307,7 +306,6 @@ textarea#episode_embed_code {
 	table {
 		input.regular-text {
 			max-width: 90%;
-			background: #F1F5F9;
 		}
 	}
 

@@ -4,10 +4,11 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit28de7d8ff03780d804c91a91b91fae1f
+class ComposerStaticInite20f05a5a7d74f2e1f9c4457aa977adf
 {
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'SeriouslySimplePodcasting\\Controllers\\Admin_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-admin-controller.php',
         'SeriouslySimplePodcasting\\Controllers\\Ads_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-ads-controller.php',
         'SeriouslySimplePodcasting\\Controllers\\App_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-app-controller.php',
         'SeriouslySimplePodcasting\\Controllers\\Assets_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-assets-controller.php',
@@ -101,7 +102,7 @@ class ComposerStaticInit28de7d8ff03780d804c91a91b91fae1f
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInit28de7d8ff03780d804c91a91b91fae1f::$classMap;
+            $loader->classMap = ComposerStaticInite20f05a5a7d74f2e1f9c4457aa977adf::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -3,23 +3,42 @@ $clr_blue_50: #F6F7F7;
 $clr_blue_100: #ccd6e2;
 $clr_blue_400: #3970AC;
 
+$clr_gray_100: #F1F5F9;
 $clr_gray_300: #CBD5E1;
 $clr_gray_400: #9CA3AF;
 $clr_gray_500: #64748B;
 $clr_gray_600: #475569;
 $clr_gray_650: #4B5563; // Do not use it, use $clr_gray_600 instead
+$clr_gray_700: #334155;
 
 $clr_red_200: #FFA5A5;
 $clr_red_400: #DF4E4F;
 
+$clr_red_50:  #FBE5ED;
+$clr_red_100: #FAD6E2;
+$clr_red_250: #FCB1C7;
+$clr_red_300: #F684A6;
+$clr_red_450: #FF4F91;
+$clr_red_500: #EC2D76;
+$clr_red_600: #E11966;
+$clr_red_700: #C11051;
+$clr_red_800: #A00D4D;
+$clr_red_900: #7F0A3D;
+  
+
 $clr_white: #FFFFFF;
 $clr_green: #4caf50;
+
+$clr_purple_600: #853AED;
+$clr_purple_700: #6C25D0;
+$clr_purple_900: #4A1B89;
 
 
 // Breakpoints:
 $breakpoints: (
-	'sm':  767px,
-	'md': 960px,
+	'xs':  480px,
+	'sm':  600px,
+	'md':  783px,
 	'lg':  1200px
 ) !default;
 

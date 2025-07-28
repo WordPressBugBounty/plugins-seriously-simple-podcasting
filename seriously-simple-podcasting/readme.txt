@@ -4,7 +4,7 @@ Tags: podcast, audio, itunes, podcasting, playlist
 Requires at least: 5.3
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.10.4
+Stable tag: 3.11.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -164,6 +164,15 @@ You can find complete user and developer documentation (along with the FAQs) on 
 15. View podcast episodes in the At A Glance widget on the main WordPress dashboard.
 
 == Changelog ==
+
+= 3.11.0 =
+2025-07-28
+[UPDATE] Updated admin interface with a new purple theme and improved styling.
+[UPDATE] Added admin header.
+[UPDATE] Improved notice management on SSP pages.
+[FIX] Added response caching for Castos API calls.
+[FIX] Fixed disabled button state handling on the Castos connection tab.
+[FIX] Fixed cover image display and file uploader styling in the sidebar.
 
 = 3.10.4 =
 2025-06-25
