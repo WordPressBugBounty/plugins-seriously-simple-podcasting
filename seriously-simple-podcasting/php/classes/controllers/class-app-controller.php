@@ -122,6 +122,11 @@ class App_Controller {
 	 * */
 	public $ads_controller;
 
+	/**
+	 * @var Episode_Controller
+	 * */
+	public $episode_controller;
+
 
 	// Handlers.
 
@@ -288,6 +293,8 @@ class App_Controller {
 		$this->feed_controller = new Feed_Controller( $this->feed_handler, $this->renderer );
 
 		$this->cron_controller = new Cron_Controller( $this->castos_handler, $this->episode_repository, $this->upgrade_handler );
+
+		$this->episode_controller = new Episode_Controller( $this->renderer, $this->episode_repository );
 
 		if ( is_admin() ) {
 			$this->admin_notices_handler->bootstrap();

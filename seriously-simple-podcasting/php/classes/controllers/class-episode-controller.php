@@ -15,7 +15,7 @@ use WP_Query;
  * @deprecated Almost all episode-related functions now in Episode_Repository or Frontend_Controller.
  * So lets just get rid of this class.
  */
-class Episode_Controller {
+class Episode_Controller extends Episode_Repository {
 
 	use Useful_Variables;
 
@@ -64,24 +64,5 @@ class Episode_Controller {
 	 */
 	public function get_episode_download_link( $episode_id, $referrer = '' ) {
 		return $this->episode_repository->get_episode_download_link( $episode_id, $referrer );
-	}
-
-	/**
-	 * Get Album Art for Player
-	 *
-	 * Iteratively tries to find the correct album art based on whether the desired image is of square aspect ratio.
-	 * Falls back to default album art if it can not find the correct ones.
-	 *
-	 * @param int $episode_id ID of the episode being loaded into the player
-	 *
-	 * @return array [ $src, $width, $height ]
-	 *
-	 * @since 1.19.4
-	 *
-	 * @deprecated Please use
-	 * @see Episode_Repository::get_album_art()
-	 */
-	public function get_album_art( $episode_id = false, $size = 'full' ) {
-		return $this->episode_repository->get_album_art( $episode_id, $size );
 	}
 }

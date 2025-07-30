@@ -1485,13 +1485,32 @@ if ( ! function_exists( 'ssp_episode_controller' ) ) {
 	/**
 	 * Get an episode controller.
 	 *
+	 * @deprecated 3.11.1 Use ssp_episode_repository() instead.
+	 *
 	 * @return Episode_Controller
 	 */
 	function ssp_episode_controller() {
-		return ssp_frontend_controller()->episode_controller;
+		return ssp_app()->get_service( 'episode_controller' );
 	}
 }
 
+
+/**
+ * Get an episode controller.
+ */
+if ( ! function_exists( 'ssp_episode_repository' ) ) {
+
+	/**
+	 * Get an episode controller.
+	 * 
+	 * @since 3.11.1
+	 *
+	 * @return Episode_Repository
+	 */
+	function ssp_episode_repository() {
+		return ssp_app()->get_service( 'episode_repository' );
+	}
+}
 
 /**
  * Get the current Series base slug.
