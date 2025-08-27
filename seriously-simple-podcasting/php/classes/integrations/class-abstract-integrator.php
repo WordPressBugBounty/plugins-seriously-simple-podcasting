@@ -1,6 +1,11 @@
 <?php
 /**
- * Paid Memberships Pro controller
+ * Abstract Integrator Class
+ *
+ * Base class for all integration implementations.
+ *
+ * @package Seriously Simple Podcasting
+ * @since 2.9.3
  */
 
 namespace SeriouslySimplePodcasting\Integrations;
@@ -23,52 +28,96 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 abstract class Abstract_Integrator {
 
-	const BULK_UPDATE_STARTED = '';
+	/**
+	 * Bulk update started constant.
+	 *
+	 * @var string
+	 */
+	const BULK_UPDATE_STARTED = 'ssp_bulk_update_started';
 
-	const ADD_LIST_OPTION = '';
+	/**
+	 * Add list option constant.
+	 *
+	 * @var string
+	 */
+	const ADD_LIST_OPTION = 'ssp_add_list_option';
 
-	const REVOKE_LIST_OPTION = '';
+	/**
+	 * Revoke list option constant.
+	 *
+	 * @var string
+	 */
+	const REVOKE_LIST_OPTION = 'ssp_revoke_list_option';
 
-	const EVENT_BULK_SYNC_SUBSCRIBERS = '';
+	/**
+	 * Event bulk sync subscribers constant.
+	 *
+	 * @var string
+	 */
+	const EVENT_BULK_SYNC_SUBSCRIBERS = 'ssp_event_bulk_sync_subscribers';
 
-	const EVENT_ADD_SUBSCRIBERS = '';
+	/**
+	 * Event add subscribers constant.
+	 *
+	 * @var string
+	 */
+	const EVENT_ADD_SUBSCRIBERS = 'ssp_event_add_subscribers';
 
-	const EVENT_REVOKE_SUBSCRIBERS = '';
+	/**
+	 * Event revoke subscribers constant.
+	 *
+	 * @var string
+	 */
+	const EVENT_REVOKE_SUBSCRIBERS = 'ssp_event_revoke_subscribers';
 
 
 	/**
+	 * Series podcasts mapping.
+	 *
 	 * @var array
-	 * */
+	 */
 	protected $series_podcasts_map;
 
 	/**
+	 * Series levels mapping.
+	 *
 	 * @var array
-	 * */
+	 */
 	protected $series_levels_map;
 
 	/**
+	 * Feed handler instance.
+	 *
 	 * @var Feed_Handler
-	 * */
+	 */
 	protected $feed_handler;
 
 	/**
+	 * Castos handler instance.
+	 *
 	 * @var Castos_Handler
-	 * */
+	 */
 	protected $castos_handler;
 
 	/**
+	 * Admin notifications handler instance.
+	 *
 	 * @var Admin_Notifications_Handler
-	 * */
+	 */
 	protected $notices_handler;
 
 	/**
+	 * Log helper instance.
+	 *
 	 * @var Log_Helper
-	 * */
+	 */
 	protected $logger;
 
 	/**
+	 * Castos podcasts array.
+	 *
 	 * @var array
-	 * */
+	 */
 	protected $castos_podcasts;
 
 
@@ -79,11 +128,14 @@ abstract class Abstract_Integrator {
 	 * @param array $args
 	 */
 	public function add_integration_settings( $args ) {
-		add_filter( 'ssp_integration_settings', function ( $settings ) use ( $args ) {
-			$settings['items'][ $args['id'] ] = $args;
+		add_filter(
+			'ssp_integration_settings',
+			function ( $settings ) use ( $args ) {
+				$settings['items'][ $args['id'] ] = $args;
 
-			return $settings;
-		} );
+				return $settings;
+			}
+		);
 	}
 
 	/**
@@ -127,7 +179,7 @@ abstract class Abstract_Integrator {
 		$series = wp_get_post_terms( $post_id, ssp_series_taxonomy() );
 
 		if ( is_wp_error( $series ) ) {
-			return [];
+			return array();
 		}
 
 		return $series;
@@ -137,20 +189,19 @@ abstract class Abstract_Integrator {
 	 * @return \WP_Term[]
 	 */
 	protected function get_current_page_related_series( $post = null ) {
-		// First, lets check if it's series page
+		// First, let's check if it's series page.
 		$queried = get_queried_object();
 
 		if ( isset( $queried->taxonomy ) && ssp_series_taxonomy() === $queried->taxonomy ) {
 			return array( $queried );
 		}
 
-		// If it's episode page, get related series
+		// If it's episode page, get related series.
 		if ( ! $post ) {
 			global $post;
 		}
 
-
-		if( isset( $post->post_type ) && SSP_CPT_PODCAST === $post->post_type ){
+		if ( isset( $post->post_type ) && SSP_CPT_PODCAST === $post->post_type ) {
 			return $this->get_episode_series( $post->ID );
 		}
 
@@ -227,12 +278,12 @@ abstract class Abstract_Integrator {
 	}
 
 	/**
-	 * @param int $user_id
+	 * @param int   $user_id
 	 * @param int[] $revoke_series_ids
 	 * @param int[] $add_series_ids
 	 */
 	protected function sync_user( $user_id, $revoke_series_ids, $add_series_ids ) {
-		$user = get_user_by( 'id', $user_id );
+		$user    = get_user_by( 'id', $user_id );
 		$success = true;
 
 		if ( ! $user ) {
@@ -290,7 +341,7 @@ abstract class Abstract_Integrator {
 	 * Revokes subscriber from multiple Castos podcasts.
 	 *
 	 * @param \WP_User $user
-	 * @param int[] $series_ids
+	 * @param int[]    $series_ids
 	 *
 	 * @return array
 	 */
@@ -305,7 +356,7 @@ abstract class Abstract_Integrator {
 	 * Adds subscriber to multiple Castos podcasts.
 	 *
 	 * @param \WP_User $user
-	 * @param int[] $series_ids
+	 * @param int[]    $series_ids
 	 *
 	 * @return array
 	 */
@@ -322,7 +373,7 @@ abstract class Abstract_Integrator {
 	/**
 	 * Adds subscriber to multiple Castos podcasts.
 	 *
-	 * @param int $series_id
+	 * @param int   $series_id
 	 * @param int[] $user_ids
 	 *
 	 * @return int
@@ -354,7 +405,7 @@ abstract class Abstract_Integrator {
 	/**
 	 * Adds subscriber to multiple Castos podcasts.
 	 *
-	 * @param int $series_id
+	 * @param int   $series_id
 	 * @param int[] $user_ids
 	 *
 	 * @return int
@@ -612,7 +663,7 @@ abstract class Abstract_Integrator {
 	/**
 	 * @return string
 	 */
-	protected function get_successfully_finished_notice(){
+	protected function get_successfully_finished_notice() {
 		return __( 'Subscribers data successfully synchronized!', 'seriously-simple-podcasting' );
 	}
 
@@ -637,7 +688,7 @@ abstract class Abstract_Integrator {
 	 */
 	protected function bulk_update_started() {
 		return wp_next_scheduled( static::EVENT_BULK_SYNC_SUBSCRIBERS ) ||
-		       wp_next_scheduled( static::EVENT_ADD_SUBSCRIBERS ) ||
-		       wp_next_scheduled( static::EVENT_REVOKE_SUBSCRIBERS );
+				wp_next_scheduled( static::EVENT_ADD_SUBSCRIBERS ) ||
+				wp_next_scheduled( static::EVENT_REVOKE_SUBSCRIBERS );
 	}
 }

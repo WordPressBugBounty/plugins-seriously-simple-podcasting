@@ -1,6 +1,8 @@
 <?php
 /**
- * Singleton Trait
+ * Singleton trait.
+ *
+ * @package SeriouslySimplePodcasting
  */
 
 namespace SeriouslySimplePodcasting\Traits;
@@ -20,6 +22,7 @@ trait Singleton {
 
 	/**
 	 * The single instance.
+	 *
 	 * @var $this
 	 */
 	protected static $_instance;

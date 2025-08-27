@@ -1,4 +1,10 @@
 <?php
+/**
+ * Podcast Playlist shortcode class.
+ *
+ * @package SeriouslySimplePodcasting
+ * @since 1.15.0
+ */
 
 namespace SeriouslySimplePodcasting\ShortCodes;
 
@@ -19,29 +25,35 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Podcast_Playlist implements Shortcode {
 
-	const OUTER = 22; // default padding and border of wrapper
-	const DEFAULT_WIDTH = 640;
+	const OUTER          = 22; // default padding and border of wrapper
+	const DEFAULT_WIDTH  = 640;
 	const DEFAULT_HEIGHT = 360;
 
 	/**
-	 * @var Frontend_Controller;
-	 * */
+	 * Frontend controller instance.
+	 *
+	 * @var Frontend_Controller
+	 */
 	protected $ss_podcasting;
 
 	/**
+	 * Theme width.
+	 *
 	 * @var int
-	 * */
+	 */
 	protected $theme_width;
 
 	/**
+	 * Theme height.
+	 *
 	 * @var int
-	 * */
+	 */
 	protected $theme_height;
 
 	/**
 	 * Shortcode function to display podcast playlist (copied and modified from wp-includes/media.php)
 	 *
-	 * @param array $params Shortcode paramaters
+	 * @param array $params Shortcode parameters.
 	 *
 	 * @return string         HTML output
 	 */
@@ -51,7 +63,7 @@ class Podcast_Playlist implements Shortcode {
 		$atts     = $this->prepare_atts( $params );
 		$episodes = $this->ss_podcasting->episode_repository->get_episodes( $atts );
 
-		if ( empty ( $episodes ) ) {
+		if ( empty( $episodes ) ) {
 			return '';
 		}
 
@@ -62,14 +74,24 @@ class Podcast_Playlist implements Shortcode {
 		}
 	}
 
+	/**
+	 * Render default player.
+	 *
+	 * @param array $episodes Episodes array.
+	 * @param array $atts     Attributes array.
+	 *
+	 * @return string
+	 */
 	protected function render_default_player( $episodes, $atts ) {
 		return $this->ss_podcasting->players_controller->render_playlist_player( $episodes, $atts );
 	}
 
 
 	/**
-	 * @param array $episodes
-	 * @param array $atts
+	 * Render compact player.
+	 *
+	 * @param array $episodes Episodes array.
+	 * @param array $atts     Attributes array.
 	 *
 	 * @return string
 	 */
@@ -79,7 +101,10 @@ class Podcast_Playlist implements Shortcode {
 		return $this->ss_podcasting->players_controller->render_playlist_compact_player( $tracks, $atts, $this->theme_width, $this->theme_height );
 	}
 
-	protected function prepare_properties(){
+	/**
+	 * Prepare properties.
+	 */
+	protected function prepare_properties() {
 		global $ss_podcasting, $content_width;
 
 		$this->ss_podcasting = $ss_podcasting;
@@ -88,12 +113,14 @@ class Podcast_Playlist implements Shortcode {
 	}
 
 	/**
-	 * @param array $params
+	 * Prepare attributes.
+	 *
+	 * @param array $params Parameters array.
 	 *
 	 * @return array
 	 */
 	protected function prepare_atts( $params ) {
-		// Get list of episode IDs for display from `episodes` parameter
+		// Get list of episode IDs for display from `episodes` parameter.
 		if ( ! empty( $params['episodes'] ) ) {
 			// 'episodes' is explicitly ordered, unless you specify otherwise.
 			if ( empty( $params['orderby'] ) ) {
@@ -144,10 +171,9 @@ class Podcast_Playlist implements Shortcode {
 	 * @return array
 	 */
 	protected function get_tracks( $episodes, $atts ) {
-		$tracks = array();
+		$tracks                 = array();
 		$is_permalink_structure = get_option( 'permalink_structure' );
 		foreach ( $episodes as $episode ) {
-
 			if ( $is_permalink_structure ) {
 				$url = $this->ss_podcasting->get_episode_download_link( $episode->ID );
 				$url = str_replace( 'podcast-download', 'podcast-player', $url );
@@ -187,7 +213,7 @@ class Podcast_Playlist implements Shortcode {
 					'resized'  => array(
 						'width'  => $this->theme_width,
 						'height' => $this->theme_height,
-					)
+					),
 				);
 			}
 
@@ -196,9 +222,9 @@ class Podcast_Playlist implements Shortcode {
 				$thumb_id = get_post_thumbnail_id( $episode->ID );
 				if ( ! empty( $thumb_id ) ) {
 					list( $src, $width, $height ) = wp_get_attachment_image_src( $thumb_id, 'full' );
-					$track['image'] = compact( 'src', 'width', 'height' );
+					$track['image']               = compact( 'src', 'width', 'height' );
 					list( $src, $width, $height ) = wp_get_attachment_image_src( $thumb_id, 'thumbnail' );
-					$track['thumb'] = compact( 'src', 'width', 'height' );
+					$track['thumb']               = compact( 'src', 'width', 'height' );
 				} else {
 					$track['image'] = '';
 					$track['thumb'] = '';
@@ -214,4 +240,3 @@ class Podcast_Playlist implements Shortcode {
 		return $tracks;
 	}
 }
-

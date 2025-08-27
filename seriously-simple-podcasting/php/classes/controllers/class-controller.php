@@ -1,4 +1,9 @@
 <?php
+/**
+ * Main controller class file.
+ *
+ * @package Seriously Simple Podcasting
+ */
 
 namespace SeriouslySimplePodcasting\Controllers;
 
@@ -31,54 +36,63 @@ abstract class Controller {
 	 * @var string
 	 */
 	public $dir;
+
 	/**
 	 * File
 	 *
 	 * @var string
 	 */
 	public $file;
+
 	/**
 	 * Assets Directory
 	 *
 	 * @var string
 	 */
 	public $assets_dir;
+
 	/**
 	 * Assets URI
 	 *
 	 * @var string
 	 */
 	public $assets_url;
+
 	/**
 	 * Home URL
 	 *
 	 * @var string
 	 */
 	public $home_url;
+
 	/**
 	 * Site URL
 	 *
 	 * @var string
 	 */
 	public $site_url;
+
 	/**
 	 * Templates Directory Path
 	 *
 	 * @var string
 	 */
 	public $template_path;
+
 	/**
 	 * Templates Directory URL
 	 *
 	 * @var string
 	 */
 	public $template_url;
+
 	/**
 	 * Token
 	 *
 	 * @var string
 	 */
 	public $token;
+	
 	/**
 	 * Version
 	 *
@@ -99,6 +113,12 @@ abstract class Controller {
 	 */
 	public $plugin_slug;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param string $file    Plugin file path.
+	 * @param string $version Plugin version.
+	 */
 	public function __construct( $file, $version ) {
 		$this->version       = $version;
 		$this->dir           = dirname( $file );
@@ -112,7 +132,5 @@ abstract class Controller {
 		$this->token         = SSP_CPT_PODCAST;
 		$this->plugin_slug   = 'seriously-simple-podcasting';
 		$this->script_suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-
 	}
-
 }

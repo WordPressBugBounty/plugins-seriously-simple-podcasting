@@ -1,23 +1,38 @@
 <?php
 /**
+ * Available Podcasts Attribute class file.
+ *
  * This class is for lazy loading Podcast settings
  * for the 'seriously-simple-podcasting/playlist-player' attributes.
- * */
+ *
+ * @package Seriously Simple Podcasting
+ */
 
 namespace SeriouslySimplePodcasting\Entities;
 
 use JsonSerializable;
 
+/**
+ * Available Podcasts Attribute class.
+ *
+ * Handles lazy loading of podcast settings for playlist player attributes.
+ */
 class Available_Podcasts_Attribute implements JsonSerializable {
+	/**
+	 * Cached podcast settings.
+	 *
+	 * @var array
+	 */
 	private $settings;
 
 	/**
 	 * Handles converting it to strings.
 	 *
-	 * @return false|string
+	 * @return string
 	 */
 	public function __toString() {
-		return json_encode( $this->get_settings() );
+		$json = wp_json_encode( $this->get_settings() );
+		return is_string( $json ) ? $json : '';
 	}
 
 	/**
@@ -42,25 +57,28 @@ class Available_Podcasts_Attribute implements JsonSerializable {
 
 		$default_series_id = ssp_get_default_series_id();
 
-		$settings = [
-			[
+		$settings = array(
+			array(
 				'label' => __( '-- All --', 'seriously-simple-podcasting' ),
 				'value' => - 1,
-			],
-		];
+			),
+		);
 
 		$this->settings = array_merge(
 			$settings,
-			array_map( function ( $item ) use ( $default_series_id ) {
-				$label = $default_series_id === $item->term_id ?
+			array_map(
+				function ( $item ) use ( $default_series_id ) {
+					$label = $default_series_id === $item->term_id ?
 					ssp_get_default_series_name( $item->name ) :
 					$item->name;
 
-				return [
-					'label' => $label,
-					'value' => $item->term_id,
-				];
-			}, ssp_get_podcasts() )
+					return array(
+						'label' => $label,
+						'value' => $item->term_id,
+					);
+				},
+				ssp_get_podcasts()
+			)
 		);
 
 		return $this->settings;

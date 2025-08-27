@@ -1,5 +1,7 @@
 <?php
 /**
+ * Feed settings configuration.
+ *
  * @var string $title
  * @var string $author
  * @var string $site_title
@@ -8,7 +10,9 @@
  * @var array $subcategories
  * @var array $language
  * @var bool $is_default
- * */
+ *
+ * @package SeriouslySimplePodcasting
+ */
 
 use SeriouslySimplePodcasting\Integrations\LifterLMS\LifterLMS_Integrator;
 use SeriouslySimplePodcasting\Integrations\Memberpress\Memberpress_Integrator;
@@ -126,8 +130,8 @@ $feed_fields = array(
 		'id'          => 'data_image',
 		'label'       => __( 'Cover Image', 'seriously-simple-podcasting' ),
 		'description' => __( 'The podcast cover image must be between 1400x1400px and 3000x3000px in size and either .jpg or .png file format', 'seriously-simple-podcasting' ) .
-		                 '. ' . __( 'Your image should be perfectly square in order for it to display properly in podcasting directories and mobile apps.', 'seriously-simple-podcasting' ) . '<br />' .
-		                 ssp_dynamo_btn( $title, 'With ' . $author, 'Create a custom cover with our free tool' ),
+						'. ' . __( 'Your image should be perfectly square in order for it to display properly in podcasting directories and mobile apps.', 'seriously-simple-podcasting' ) . '<br />' .
+						ssp_dynamo_btn( $title, 'With ' . $author, 'Create a custom cover with our free tool' ),
 		'type'        => 'image',
 		'default'     => '',
 		'placeholder' => '',
@@ -156,7 +160,7 @@ $feed_fields = array(
 	array(
 		'id'          => 'data_language',
 		'label'       => __( 'Language', 'seriously-simple-podcasting' ),
-		// translators: placeholders are for a link to the ISO standards
+		// translators: placeholders are for a link to the ISO standards.
 		'description' => sprintf( __( 'Your podcast\'s language in %1$sISO-639-1 format%2$s.', 'seriously-simple-podcasting' ), '<a href="' . esc_url( 'http://www.loc.gov/standards/iso639-2/php/code_list.php' ) . '" target="' . wp_strip_all_tags( '_blank' ) . '">', '</a>' ),
 		'type'        => 'text',
 		'default'     => $language,
@@ -234,10 +238,11 @@ $feed_fields = array(
 	array(
 		'id'          => 'explicit',
 		'label'       => __( 'Explicit', 'seriously-simple-podcasting' ),
-		// translators: placeholders are for an Apple help document link
+		// translators: placeholders are for an Apple help document link.
 		'description' => sprintf(
 			__( 'To mark this podcast as an explicit podcast, check this box. Explicit content rules can be found %1$shere%2$s.', 'seriously-simple-podcasting' ),
-			'<a target="_blank" href="https://discussions.apple.com/thread/1079151">', '</a>'
+			'<a target="_blank" href="https://discussions.apple.com/thread/1079151">',
+			'</a>'
 		),
 		'type'        => 'checkbox',
 		'default'     => '',
@@ -273,7 +278,7 @@ $feed_fields = array(
 	array(
 		'id'          => 'consume_order',
 		'label'       => __( 'Show Type', 'seriously-simple-podcasting' ),
-		// translators: placeholders are for help document link
+		// translators: placeholders are for help document link.
 		'description' => sprintf( __( 'The order your podcast episodes will be listed. %1$sMore details here.%2$s', 'seriously-simple-podcasting' ), '<a href="' . esc_url( 'https://castos.com/ios-11-podcast-tags/' ) . '" target="' . wp_strip_all_tags( '_blank' ) . '">', '</a>' ),
 		'type'        => 'select',
 		'options'     => array(
@@ -286,7 +291,7 @@ $feed_fields = array(
 	array(
 		'id'          => 'media_prefix',
 		'label'       => __( 'Media File Prefix', 'seriously-simple-podcasting' ),
-		// translators: placeholders are for help document link
+		// translators: placeholders are for help document link.
 		'description' => sprintf( __( 'Enter your Podtrac or other media file prefix here. %1$sMore details here.%2$s', 'seriously-simple-podcasting' ), '<a href="' . esc_url( 'https://support.castos.com/hc/en-us/articles/360019364119-Add-a-media-file-prefix-in-WordPress-for-Podtrac-Chartable-and-other-analytics-or-tracking-services' ) . '" target="' . wp_strip_all_tags( '_blank' ) . '">', '</a>' ),
 		'type'        => 'text',
 		'default'     => '',
@@ -308,7 +313,7 @@ $feed_fields = array(
 	array(
 		'id'          => 'exclude_feed',
 		'label'       => __( 'Exclude podcast from default feed', 'seriously-simple-podcasting' ),
-		// translators: placeholders are html anchor tags to support document
+		// translators: placeholders are html anchor tags to support document.
 		'description' => sprintf( __( 'When enabled, this will exclude any episodes in this podcast feed from the default feed. %1$sMore details here.%2$s', 'seriously-simple-podcasting' ), '<a href="' . esc_url( 'https://support.castos.com/article/67-include-series-episodes-in-the-default-feed' ) . '" target="' . wp_strip_all_tags( '_blank' ) . '">', '</a>' ),
 		'type'        => $is_default ? 'hidden' : 'checkbox',
 		'default'     => 'on',
@@ -317,7 +322,7 @@ $feed_fields = array(
 	array(
 		'id'          => 'turbocharge_feed',
 		'label'       => __( 'Turbocharge podcast feed', 'seriously-simple-podcasting' ),
-		// translators: placeholders are html anchor tags to support document
+		// translators: placeholders are html anchor tags to support document.
 		'description' => sprintf( __( 'When enabled, this setting will speed up your feed loading time. %1$sMore details here.%2$s', 'seriously-simple-podcasting' ), '<a href="' . esc_url( 'https://support.castos.com/article/220-turbocharging-your-feed-to-maximize-available-episodes' ) . '" target="' . wp_strip_all_tags( '_blank' ) . '">', '</a>' ),
 		'type'        => 'checkbox',
 		'default'     => '',
@@ -329,10 +334,10 @@ $feed_fields = array(
 		// translators: Do not translate the words inside the {} curly brackets; they are replaced.
 		'description' => strtr(
 			__( 'Episode limit in this feed. If not specified or 0, defaults to {link}Syndication feeds show the most recent{/link} setting.', 'seriously-simple-podcasting' ),
-			[
+			array(
 				'{link}'  => '<a href="' . esc_url( admin_url( 'options-reading.php' ) ) . '">',
 				'{/link}' => '</a>',
-			]
+			)
 		),
 		'type'        => 'number',
 		'default'     => get_option( 'posts_per_rss', 10 ),

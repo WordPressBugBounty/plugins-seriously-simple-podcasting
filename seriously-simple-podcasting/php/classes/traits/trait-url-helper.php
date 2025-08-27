@@ -1,6 +1,8 @@
 <?php
 /**
- * Singleton Trait
+ * URL Helper trait.
+ *
+ * @package SeriouslySimplePodcasting
  */
 
 namespace SeriouslySimplePodcasting\Traits;
@@ -35,7 +37,7 @@ trait URL_Helper {
 	protected function is_ssp_post_page() {
 
 		$current_screen = get_current_screen();
-		if( ! $current_screen ) {
+		if ( ! $current_screen ) {
 			return false;
 		}
 
@@ -53,9 +55,28 @@ trait URL_Helper {
 			return false;
 		}
 
-		return in_array( $current_screen->post_type, [ SSP_CPT_PODCAST ], true );
+		return in_array( $current_screen->post_type, array( SSP_CPT_PODCAST ), true );
 	}
 
+	/**
+	 * Checks if this is a podcast post type page or not.
+	 *
+	 * @return bool
+	 */
+	protected function is_ssp_settings_page() {
+		$current_screen = get_current_screen();
+		if ( ! $current_screen ) {
+			return false;
+		}
+
+		return 'podcast_page_podcast_settings' === $current_screen->id;
+	}
+
+	/**
+	 * Check if this is any post page.
+	 *
+	 * @return bool
+	 */
 	protected function is_any_post_page() {
 		$current_screen = get_current_screen();
 		if ( ! $current_screen ) {

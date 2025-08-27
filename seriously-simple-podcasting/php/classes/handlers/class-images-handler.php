@@ -1,31 +1,52 @@
 <?php
+/**
+ * Images Handler
+ *
+ * @package SeriouslySimplePodcasting
+ * @category Handlers
+ * @since 2.6.3
+ */
 
 namespace SeriouslySimplePodcasting\Handlers;
 
 use SeriouslySimplePodcasting\Interfaces\Service;
 
 /**
- * SSP Roles Handler
+ * Class Images_Handler
+ *
+ * Handles image validation and processing for podcast images.
  *
  * @package Seriously Simple Podcasting
  * @since 2.6.3
  */
 class Images_Handler implements Service {
 
+	/**
+	 * Minimum size in pixels for podcast feed images.
+	 *
+	 * @var int
+	 */
 	const MIN_FEED_IMAGE_SIZE = 1400;
+
+	/**
+	 * Maximum size in pixels for podcast feed images.
+	 *
+	 * @var int
+	 */
 	const MAX_FEED_IMAGE_SIZE = 3000;
 
 	/**
-	 * @param string $image_url
+	 * Validates if a feed image meets the size requirements.
 	 *
-	 * @return bool
+	 * @param string $image_url URL of the image to validate.
+	 *
+	 * @return bool True if image is valid, false otherwise.
 	 */
 	public function is_feed_image_valid( $image_url ) {
-		$key = md5( $image_url );
+		$key   = md5( $image_url );
 		$valid = wp_cache_get( $key, 'valid' );
 
 		if ( false === $valid ) {
-
 			$image_id = attachment_url_to_postid( $image_url );
 
 			$image_att = $image_id ? wp_get_attachment_image_src( $image_id, 'full' ) : null;
@@ -36,7 +57,7 @@ class Images_Handler implements Service {
 			} else {
 				$width  = isset( $image_att[1] ) ? $image_att[1] : 0;
 				$height = isset( $image_att[2] ) ? $image_att[2] : 0;
-				$valid = $width === $height && $width >= $min_size && $width <= $max_size;
+				$valid  = $width === $height && $width >= $min_size && $width <= $max_size;
 			}
 			wp_cache_set( $key, $valid, 'valid', WEEK_IN_SECONDS );
 		}
@@ -46,9 +67,11 @@ class Images_Handler implements Service {
 
 
 	/**
-	 * @param array $image_data Converted image data array with width and height keys
+	 * Checks if an image is square (width equals height).
 	 *
-	 * @return bool
+	 * @param array $image_data Converted image data array with width and height keys.
+	 *
+	 * @return bool True if image is square, false otherwise.
 	 */
 	public function is_image_square( $image_data = array() ) {
 		if ( isset( $image_data['width'] ) && isset( $image_data['height'] ) ) {
@@ -59,12 +82,13 @@ class Images_Handler implements Service {
 	}
 
 	/**
-	 * Almost the same function as wp_get_attachment_image_src(), but returning the associative human readable array
+	 * Gets attachment image source data in a human-readable format.
+	 * Similar to wp_get_attachment_image_src(), but returns an associative array.
 	 *
-	 * @param $attachment_id
-	 * @param string $size
+	 * @param int    $attachment_id The attachment ID.
+	 * @param string $size          The image size to retrieve. Default 'medium'.
 	 *
-	 * @return array
+	 * @return array Array containing image data (src, width, height, alt).
 	 */
 	public function get_attachment_image_src( $attachment_id, $size = 'medium' ) {
 		$src = wp_get_attachment_image_src( $attachment_id, $size );
@@ -72,12 +96,12 @@ class Images_Handler implements Service {
 	}
 
 	/**
-	 * Convert the array returned from wp_get_attachment_image_src into a human readable version
+	 * Converts the array returned from wp_get_attachment_image_src into a human-readable version.
 	 *
-	 * @param array $image_data_array
-	 * @param int|null $attachment_id
+	 * @param array    $image_data_array Array containing image data from wp_get_attachment_image_src.
+	 * @param int|null $attachment_id    Optional. The attachment ID for getting alt text.
 	 *
-	 * @return array
+	 * @return array Associative array containing image data (src, width, height, alt).
 	 */
 	protected function make_associative_image_src( $image_data_array, $attachment_id = null ) {
 		if ( ! is_array( $image_data_array ) || ! $image_data_array ) {

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Episode File Data entity class file.
+ *
+ * @package Seriously Simple Podcasting
+ */
 
 namespace SeriouslySimplePodcasting\Entities;
 
@@ -8,23 +13,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Abstract entity class.
+ * Episode File Data entity class.
+ *
  * @since 2.24.0
  */
 class Episode_File_Data extends Abstract_API_Entity {
 
 	/**
-	 * @var string $ads_enabled
-	 * */
+	 * File URL.
+	 *
+	 * @var string
+	 */
 	public $url;
 
 	/**
-	 * @var bool $ads_enabled
-	 * */
+	 * Whether ads are enabled.
+	 *
+	 * @var bool
+	 */
 	public $ads_enabled;
 
 	/**
-	 * @param array $properties
+	 * Constructor.
+	 *
+	 * @param array $properties Entity properties.
 	 */
 	public function __construct( $properties ) {
 		parent::__construct( $properties );
@@ -35,5 +47,4 @@ class Episode_File_Data extends Abstract_API_Entity {
 
 		$this->success = isset( $properties['code'] ) && ( 200 === $properties['code'] );
 	}
-
 }

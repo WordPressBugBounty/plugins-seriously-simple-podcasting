@@ -1,4 +1,9 @@
 <?php
+/**
+ * Playlist widget class.
+ *
+ * @package SeriouslySimplePodcasting
+ */
 
 namespace SeriouslySimplePodcasting\Widgets;
 
@@ -19,6 +24,7 @@ class Playlist extends Castos_Widget {
 
 	/**
 	 * Constructor function.
+	 *
 	 * @since  1.9.0
 	 */
 	public function __construct() {
@@ -32,7 +38,9 @@ class Playlist extends Castos_Widget {
 
 
 	/**
-	 * @param array $instance
+	 * Get widget body.
+	 *
+	 * @param array $instance Widget instance.
 	 *
 	 * @return string
 	 */
@@ -47,7 +55,7 @@ class Playlist extends Castos_Widget {
 			'style'        => 'color_style',
 			'order'        => 'order',
 			'orderby'      => 'orderby',
-			'limit'        => 'limit'
+			'limit'        => 'limit',
 		);
 
 		foreach ( $allowed_atts as $k => $v ) {
@@ -62,6 +70,8 @@ class Playlist extends Castos_Widget {
 	}
 
 	/**
+	 * Get series.
+	 *
 	 * @return array
 	 */
 	protected function get_series() {
@@ -76,6 +86,8 @@ class Playlist extends Castos_Widget {
 	}
 
 	/**
+	 * Get fields.
+	 *
 	 * @return array
 	 */
 	protected function get_fields() {
@@ -146,7 +158,7 @@ class Playlist extends Castos_Widget {
 				'id'          => 'orderby',
 				'label'       => __( 'Order By:', 'seriously-simple-podcasting' ),
 				'placeholder' => __( 'Default', 'seriously-simple-podcasting' ),
-				'items' => array(
+				'items'       => array(
 					'id'            => __( 'ID', 'seriously-simple-podcasting' ),
 					'menu_order'    => __( 'Menu order', 'seriously-simple-podcasting' ),
 					'author'        => __( 'Author', 'seriously-simple-podcasting' ),

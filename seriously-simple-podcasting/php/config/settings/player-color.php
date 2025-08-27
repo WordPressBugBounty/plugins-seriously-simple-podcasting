@@ -1,4 +1,9 @@
 <?php
+/**
+ * Player color settings configuration.
+ *
+ * @package SeriouslySimplePodcasting
+ */
 
 return array(
 	array(
@@ -7,7 +12,7 @@ return array(
 		'type'    => 'color',
 		'css_var' => array(
 			'--ssp-dark-mode-text-color',
-			'--ssp-light-mode-text-color'
+			'--ssp-light-mode-text-color',
 		),
 		'default' => '#fff',
 	),

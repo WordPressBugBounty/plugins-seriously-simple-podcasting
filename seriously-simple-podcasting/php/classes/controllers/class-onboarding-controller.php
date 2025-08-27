@@ -1,8 +1,12 @@
 <?php
+/**
+ * Onboarding controller class file.
+ *
+ * @package Seriously Simple Podcasting
+ */
 
 namespace SeriouslySimplePodcasting\Controllers;
 
-// Exit if accessed directly.
 use SeriouslySimplePodcasting\Handlers\CPT_Podcast_Handler;
 use SeriouslySimplePodcasting\Handlers\Roles_Handler;
 use SeriouslySimplePodcasting\Handlers\Settings_Handler;
@@ -10,6 +14,7 @@ use SeriouslySimplePodcasting\Renderers\Renderer;
 use SeriouslySimplePodcasting\Traits\Useful_Variables;
 use WP_Error;
 
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -31,20 +36,24 @@ class Onboarding_Controller {
 	const ONBOARDING_BASE_SLUG = 'ssp-onboarding';
 
 	/**
+	 * Renderer instance.
+	 *
 	 * @var Renderer
 	 */
 	protected $renderer;
 
 	/**
+	 * Settings handler instance.
+	 *
 	 * @var Settings_Handler
-	 * */
+	 */
 	protected $settings_handler;
 
 	/**
 	 * Onboarding_Controller constructor.
 	 *
-	 * @param Renderer $renderer
-	 * @param Settings_Handler $settings_handler
+	 * @param Renderer         $renderer         Renderer instance for rendering views.
+	 * @param Settings_Handler $settings_handler Handler for plugin settings.
 	 */
 	public function __construct( $renderer, $settings_handler ) {
 		$this->renderer         = $renderer;
@@ -60,7 +69,9 @@ class Onboarding_Controller {
 
 	/**
 	 * Fix PHP deprecated warning for new WordPress installations on the first onboarding step.
-	 * */
+	 *
+	 * @return void
+	 */
 	public function fix_deprecated_warning() {
 		$page = filter_input( INPUT_GET, 'page' );
 		if ( $page && ( false !== strpos( $page, self::ONBOARDING_BASE_SLUG ) ) ) {
@@ -85,9 +96,14 @@ class Onboarding_Controller {
 		$screen = get_current_screen();
 		if ( false !== strpos( $screen->base, self::ONBOARDING_BASE_SLUG ) ) {
 			wp_enqueue_media();
-			wp_enqueue_script( 'ssp-onboarding', esc_url( $this->assets_url . 'admin/js/onboarding' . $this->script_suffix . '.js' ), array(
-				'jquery',
-			), $this->version );
+			wp_enqueue_script(
+				'ssp-onboarding',
+				esc_url( $this->assets_url . 'admin/js/onboarding' . $this->script_suffix . '.js' ),
+				array(
+					'jquery',
+				),
+				$this->version
+			);
 		}
 	}
 
@@ -104,17 +120,21 @@ class Onboarding_Controller {
 			);
 		}
 
-		for ( $page_number = 1; $page_number <= self::STEPS_NUMBER; $page_number ++ ) {
-			$this->register_page( 'Onboarding wizard', $this->get_page_slug( $page_number ), array(
-				$this,
-				sprintf( 'step_%s', $page_number ),
-			) );
+		for ( $page_number = 1; $page_number <= self::STEPS_NUMBER; $page_number++ ) {
+			$this->register_page(
+				'Onboarding wizard',
+				$this->get_page_slug( $page_number ),
+				array(
+					$this,
+					sprintf( 'step_%s', $page_number ),
+				)
+			);
 		}
 	}
 
 	/**
-	 * @param string $title
-	 * @param string $slug
+	 * @param string   $title
+	 * @param string   $slug
 	 * @param callable $callable
 	 */
 	protected function register_page( $title, $slug, $callable ) {
@@ -177,7 +197,7 @@ class Onboarding_Controller {
 			}
 		}
 
-		return [];
+		return array();
 	}
 
 	/**
@@ -192,7 +212,7 @@ class Onboarding_Controller {
 		);
 
 		$step_urls = array();
-		for ( $page_number = 1; $page_number <= self::STEPS_NUMBER; $page_number ++ ) {
+		for ( $page_number = 1; $page_number <= self::STEPS_NUMBER; $page_number++ ) {
 			$step_urls[ $page_number ] = $this->get_step_url( $page_number );
 		}
 		$data['step_urls'] = $step_urls;
@@ -275,10 +295,14 @@ class Onboarding_Controller {
 		$name   = ssp_get_option( 'data_title', get_bloginfo( 'name' ), $series_id );
 		$slug   = wp_unique_term_slug( sanitize_title( $name ), $series );
 
-		return wp_update_term( $series_id, ssp_series_taxonomy(), array(
-			'name' => $name,
-			'slug' => $slug,
-		) );
+		return wp_update_term(
+			$series_id,
+			ssp_series_taxonomy(),
+			array(
+				'name' => $name,
+				'slug' => $slug,
+			)
+		);
 	}
 
 	/**

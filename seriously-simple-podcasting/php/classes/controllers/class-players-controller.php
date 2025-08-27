@@ -1,4 +1,9 @@
 <?php
+/**
+ * Players controller class file.
+ *
+ * @package Seriously Simple Podcasting
+ */
 
 namespace SeriouslySimplePodcasting\Controllers;
 
@@ -25,24 +30,32 @@ class Players_Controller {
 	use Useful_Variables;
 
 	/**
+	 * Renderer instance.
+	 *
 	 * @var Renderer
-	 * */
+	 */
 	public $renderer;
 
 	/**
+	 * Options handler instance.
+	 *
 	 * @var Options_Handler
-	 * */
+	 */
 	public $options_handler;
 
 	/**
+	 * Episode repository instance.
+	 *
 	 * @var Episode_Repository
-	 * */
+	 */
 	public $episode_repository;
 
 	/**
-	 * @param Renderer $renderer
-	 * @param Options_Handler $options_handler
-	 * @param Episode_Repository $episode_repository
+	 * Players_Controller constructor.
+	 *
+	 * @param Renderer           $renderer           Renderer instance for rendering views.
+	 * @param Options_Handler    $options_handler    Handler for plugin options.
+	 * @param Episode_Repository $episode_repository Repository for episode data operations.
 	 */
 	public function __construct( $renderer, $options_handler, $episode_repository ) {
 		$this->renderer           = $renderer;
@@ -54,7 +67,7 @@ class Players_Controller {
 	}
 
 	/**
-	 * Registers player assets
+	 * Registers player assets.
 	 *
 	 * @return void
 	 */
@@ -62,7 +75,7 @@ class Players_Controller {
 
 		wp_register_script(
 			'ssp-castos-player',
-			esc_url( SSP_PLUGIN_URL . 'assets/js/castos-player'. $this->script_suffix . '.js' ),
+			esc_url( SSP_PLUGIN_URL . 'assets/js/castos-player' . $this->script_suffix . '.js' ),
 			array(),
 			$this->version,
 			true
@@ -70,7 +83,7 @@ class Players_Controller {
 
 		wp_register_style(
 			'ssp-castos-player',
-			esc_url( SSP_PLUGIN_URL . 'assets/css/castos-player'. $this->script_suffix . '.css' ),
+			esc_url( SSP_PLUGIN_URL . 'assets/css/castos-player' . $this->script_suffix . '.css' ),
 			array(),
 			$this->version
 		);
@@ -78,21 +91,53 @@ class Players_Controller {
 
 
 	/**
-	 * Todo: move it to Episode_Repository
-	 * */
+	 * Get AJAX playlist items with improved security.
+	 *
+	 * @return array|void
+	 */
 	public function get_ajax_playlist_items() {
-		$atts      = json_decode( filter_input( INPUT_GET, 'atts' ), ARRAY_A );
-		$page      = filter_input( INPUT_GET, 'page', FILTER_VALIDATE_INT );
-		$nonce     = filter_input( INPUT_GET, 'nonce' );
-		$player_id = filter_input( INPUT_GET, 'player_id' );
+		// Validate and sanitize input parameters
+		$atts_raw = filter_input( INPUT_GET, 'atts', FILTER_UNSAFE_RAW );
+		$page_raw = filter_input( INPUT_GET, 'page', FILTER_VALIDATE_INT );
+		$nonce = filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW );
+		$player_id_raw = filter_input( INPUT_GET, 'player_id', FILTER_UNSAFE_RAW );
 
-		if ( ! $atts || ! $page || ! wp_verify_nonce($nonce, 'ssp_castos_player_' . $player_id) ) {
-			wp_send_json_error();
+		// Validate required parameters
+		if ( empty( $atts_raw ) || empty( $page_raw ) || empty( $nonce ) || empty( $player_id_raw ) ) {
+			wp_send_json_error( array( 'message' => 'Missing required parameters' ) );
 		}
 
-		$episodes = $this->episode_repository->get_episodes( array_merge( $atts, compact( 'page' ) ) );
-		$items    = array();
+		// Sanitize and validate atts
+		$atts_raw = sanitize_text_field( $atts_raw );
+		$atts = json_decode( $atts_raw, true );
+		if ( ! is_array( $atts ) ) {
+			wp_send_json_error( array( 'message' => 'Invalid attributes format' ) );
+		}
 
+		// Validate page number
+		$page = absint( $page_raw );
+		if ( $page < 1 || $page > 1000 ) { // Reasonable upper limit
+			wp_send_json_error( array( 'message' => 'Invalid page number' ) );
+		}
+
+		// Validate player_id format (alphanumeric and hyphens only)
+		$player_id = sanitize_key( $player_id_raw );
+		if ( empty( $player_id ) || ! preg_match( '/^[a-z0-9-]+$/', $player_id ) ) {
+			wp_send_json_error( array( 'message' => 'Invalid player ID format' ) );
+		}
+
+		// Verify nonce
+		if ( ! wp_verify_nonce( $nonce, 'ssp_castos_player_' . $player_id ) ) {
+			wp_send_json_error( array( 'message' => 'Security check failed' ) );
+		}
+
+		// Get episodes with validated parameters
+		$episodes = $this->episode_repository->get_episodes( array_merge( $atts, compact( 'page' ) ) );
+		if ( ! is_array( $episodes ) ) {
+			wp_send_json_error( array( 'message' => 'Failed to retrieve episodes' ) );
+		}
+
+		$items = array();
 		$allowed_keys = array(
 			'episode_id',
 			'album_art',
@@ -101,12 +146,35 @@ class Players_Controller {
 			'date',
 			'duration',
 			'excerpt',
-			'audio_file'
+			'audio_file',
 		);
 
 		foreach ( $episodes as $episode ) {
+			if ( ! is_object( $episode ) || ! isset( $episode->ID ) ) {
+				continue;
+			}
+
 			$player_data = $this->episode_repository->get_player_data( $episode->ID );
-			$items[] = array_intersect_key( $player_data, array_flip( $allowed_keys ) );
+			if ( ! is_array( $player_data ) ) {
+				continue;
+			}
+
+			// Filter to allowed keys and escape output
+			$filtered_data = array_intersect_key( $player_data, array_flip( $allowed_keys ) );
+			
+			// Escape all string values
+			foreach ( $filtered_data as $key => $value ) {
+				if ( is_string( $value ) ) {
+					$filtered_data[ $key ] = esc_html( $value );
+				} elseif ( is_array( $value ) && isset( $value['src'] ) ) {
+					// Handle album_art array
+					$filtered_data[ $key ] = array(
+						'src' => esc_url( $value['src'] ),
+					);
+				}
+			}
+
+			$items[] = $filtered_data;
 		}
 
 		return $items;
@@ -129,8 +197,8 @@ class Players_Controller {
 
 		if ( $skip_empty_audio && empty( $template_data['audio_file'] ) ) {
 			$show_with_warning = is_admin() ||
-			                     'edit' === filter_input( INPUT_GET, 'context' ) ||
-			                     'elementor' === filter_input( INPUT_GET, 'action' );
+								'edit' === filter_input( INPUT_GET, 'context' ) ||
+								'elementor' === filter_input( INPUT_GET, 'action' );
 
 			if ( $show_with_warning ) {
 				$template_data['add_empty_warning'] = true;
@@ -163,11 +231,12 @@ class Players_Controller {
 
 	/**
 	 * Fetch episode meta details
+	 *
 	 * @param  integer $episode_id ID of episode post
 	 * @param  string  $context    Context for display
 	 * @return string              Episode meta details
 	 */
-	public function episode_meta_details ( $episode_id = 0, $context = 'content', $return = false ) {
+	public function episode_meta_details( $episode_id = 0, $context = 'content', $return = false ) {
 
 		if ( ! $episode_id ) {
 			return '';
@@ -181,11 +250,11 @@ class Players_Controller {
 
 		$link = $this->episode_repository->get_episode_download_link( $episode_id, 'download' );
 
-		$duration = get_post_meta( $episode_id , 'duration' , true );
-		$size = get_post_meta( $episode_id , 'filesize' , true );
+		$duration = get_post_meta( $episode_id, 'duration', true );
+		$size     = get_post_meta( $episode_id, 'filesize', true );
 		if ( ! $size ) {
 			$size_data = $this->episode_repository->get_file_size( $file );
-			$size = isset( $size_data['formatted'] ) ? $size_data['formatted'] : 0;
+			$size      = isset( $size_data['formatted'] ) ? $size_data['formatted'] : 0;
 			if ( $size ) {
 				if ( isset( $size_data['formatted'] ) ) {
 					update_post_meta( $episode_id, 'filesize', $size_data['formatted'] );
@@ -201,32 +270,32 @@ class Players_Controller {
 
 		// Build up meta data array with default values
 		$meta = array(
-			'link' => '',
-			'new_window' => false,
-			'duration' => 0,
+			'link'          => '',
+			'new_window'    => false,
+			'duration'      => 0,
 			'date_recorded' => '',
 		);
 
-		if( $link ) {
+		if ( $link ) {
 			$meta['link'] = $link;
 		}
 
-		if( $link && apply_filters( 'ssp_show_new_window_link', true, $context ) ) {
+		if ( $link && apply_filters( 'ssp_show_new_window_link', true, $context ) ) {
 			$meta['new_window'] = true;
 		}
 
-		if( $link ) {
+		if ( $link ) {
 			$meta['duration'] = $duration;
 		}
 
-		if( $date_recorded ) {
+		if ( $date_recorded ) {
 			$meta['date_recorded'] = $date_recorded;
 		}
 
 		// Allow dynamic filtering of meta data - to remove, add or reorder meta items
 		$meta = apply_filters( 'ssp_episode_meta_details', $meta, $episode_id, $context );
 
-		if( true === $return ){
+		if ( true === $return ) {
 			return $meta;
 		}
 
@@ -257,11 +326,15 @@ class Players_Controller {
 		// For the case if multiple players are rendered on the same page, we need to generate the player id;
 		$player_id = wp_rand();
 
-		wp_localize_script( 'ssp-castos-player', 'ssp_castos_player_' . $player_id, array(
-			'ajax_url' => admin_url( 'admin-ajax.php' ),
-			'atts'     => $atts,
-			'nonce'    => wp_create_nonce( 'ssp_castos_player_' . $player_id ),
-		) );
+		wp_localize_script(
+			'ssp-castos-player',
+			'ssp_castos_player_' . $player_id,
+			array(
+				'ajax_url' => admin_url( 'admin-ajax.php' ),
+				'atts'     => $atts,
+				'nonce'    => wp_create_nonce( 'ssp_castos_player_' . $player_id ),
+			)
+		);
 		$this->enqueue_player_assets();
 
 		$template_data = $this->episode_repository->get_player_data( $episodes[0]->ID, get_post() );
@@ -314,7 +387,7 @@ class Players_Controller {
 		$class      = $atts['class'];
 
 		static $instance = 0;
-		$instance ++;
+		++$instance;
 
 		if ( 1 === $instance ) {
 			/* This hook is defined in wp-includes/media.php */
@@ -323,7 +396,7 @@ class Players_Controller {
 
 		return $this->renderer->fetch(
 			'players/playlist-compact-player',
-			compact('safe_style', 'safe_type', 'data', 'width', 'height', 'class')
+			compact( 'safe_style', 'safe_type', 'data', 'width', 'height', 'class' )
 		);
 	}
 
@@ -339,7 +412,7 @@ class Players_Controller {
 
 		if ( $is_player_custom_colors_enabled && ! wp_style_is( 'ssp-dynamic-style', 'enqueued' ) ) {
 			$version = ssp_get_option( 'dynamic_style_version', time() );
-			$url = wp_upload_dir()['baseurl'] . '/ssp/css/ssp-dynamic-style.css';
+			$url     = wp_upload_dir()['baseurl'] . '/ssp/css/ssp-dynamic-style.css';
 			wp_enqueue_style(
 				'ssp-dynamic-style',
 				esc_url( set_url_scheme( $url ) ),
@@ -356,7 +429,7 @@ class Players_Controller {
 	 *
 	 * @return bool
 	 */
-	protected function can_enqueue_script( $handle ){
+	protected function can_enqueue_script( $handle ) {
 		return wp_script_is( $handle, 'registered' ) && ! wp_script_is( $handle, 'enqueued' );
 	}
 
@@ -367,7 +440,7 @@ class Players_Controller {
 	 *
 	 * @return bool
 	 */
-	protected function can_enqueue_style( $handle ){
+	protected function can_enqueue_style( $handle ) {
 		return wp_style_is( $handle, 'registered' ) && ! wp_style_is( $handle, 'enqueued' );
 	}
 
@@ -400,7 +473,7 @@ class Players_Controller {
 
 	/**
 	 * @param string $src_file
-	 * @param int $episode_id
+	 * @param int    $episode_id
 	 * @param string $player_size
 	 * @param string $context
 	 *
@@ -417,11 +490,14 @@ class Players_Controller {
 		$src_file = str_replace( 'podcast-download', 'podcast-player', $src_file );
 
 		// Set up parameters for media player
-		$params = array( 'src' => $src_file, 'preload' => 'none' );
-
+		$params = array(
+			'src'     => $src_file,
+			'preload' => 'none',
+		);
 
 		/**
 		 * If the media file is of type video
+		 *
 		 * @todo is this necessary in the case of the HTML5 player?
 		 */
 		if ( 'video' === $type ) {
@@ -445,7 +521,6 @@ class Players_Controller {
 			$player_size = 'standard';
 		}
 
-
 		if ( 'standard' === $player_size ) {
 			$player = $this->render_media_player( $episode_id, $context );
 		} else {
@@ -461,13 +536,13 @@ class Players_Controller {
 		 * Get the episode (post) object
 		 * If the id passed is empty or 0, get_post will return the current post
 		 */
-		$episode  = get_post( $id );
+		$episode = get_post( $id );
 
 		$src_file = ssp_episode_passthrough_required( $id ) ?
 			$this->episode_repository->get_passthrough_url( $id ) :
 			$this->episode_repository->get_enclosure( $id );
 
-		$params   = array(
+		$params = array(
 			'src'     => $src_file,
 			'preload' => 'none',
 		);
@@ -531,7 +606,7 @@ class Players_Controller {
 	}
 
 	/**
-	 * @param array $meta
+	 * @param array  $meta
 	 * @param string $meta_sep
 	 *
 	 * @return string
@@ -540,7 +615,6 @@ class Players_Controller {
 		$podcast_display = '';
 
 		foreach ( $meta as $key => $data ) {
-
 			if ( ! $data ) {
 				continue;
 			}
@@ -548,7 +622,6 @@ class Players_Controller {
 			$sep = $podcast_display ? $meta_sep : '';
 
 			switch ( $key ) {
-
 				case 'link':
 					if ( 'on' === get_option( 'ss_podcasting_download_file_enabled', 'on' ) ) {
 						$podcast_display .= $sep . '<a href="' . esc_url( $data ) . '" title="' . get_the_title() . ' " class="podcast-meta-download">' . __( 'Download file', 'seriously-simple-podcasting' ) . '</a>';
@@ -557,7 +630,7 @@ class Players_Controller {
 
 				case 'new_window':
 					if ( isset( $meta['link'] ) && 'on' === get_option( 'ss_podcasting_play_in_new_window_enabled', 'on' ) ) {
-						$play_link       = add_query_arg( 'ref', 'new_window', $meta['link'] );
+						$play_link        = add_query_arg( 'ref', 'new_window', $meta['link'] );
 						$podcast_display .= $sep . '<a href="' . esc_url( $play_link ) . '" target="_blank" title="' . get_the_title() . ' " class="podcast-meta-new-window">' . __( 'Play in new window', 'seriously-simple-podcasting' ) . '</a>';
 					}
 
@@ -577,7 +650,7 @@ class Players_Controller {
 
 				// Allow for custom items to be added, but only allow a small amount of HTML tags
 				default:
-					$allowed_tags    = array(
+					$allowed_tags     = array(
 						'strong' => array(),
 						'b'      => array(),
 						'em'     => array(),
@@ -600,13 +673,13 @@ class Players_Controller {
 	}
 
 	/**
-	 * @param int $episode_id
+	 * @param int    $episode_id
 	 * @param string $context
 	 * @param string $meta_sep
 	 *
 	 * @return string
 	 */
-	public function get_subscribe_display( $episode_id, $context, $meta_sep ){
+	public function get_subscribe_display( $episode_id, $context, $meta_sep ) {
 		$subscribe_display = '';
 		if ( 'on' !== get_option( 'ss_podcasting_player_subscribe_urls_enabled', 'on' ) ) {
 			return $subscribe_display;
@@ -614,7 +687,6 @@ class Players_Controller {
 		$options_handler = new Options_Handler();
 		$subscribe_urls  = $options_handler->get_subscribe_urls( $episode_id, $context );
 		foreach ( $subscribe_urls as $key => $data ) {
-
 			if ( empty( $data['url'] ) ) {
 				continue;
 			}
@@ -624,7 +696,7 @@ class Players_Controller {
 			}
 
 			if ( preg_match( '/\b_url\b/', $key ) === false ) {
-				$allowed_tags      = array(
+				$allowed_tags       = array(
 					'strong' => array(),
 					'b'      => array(),
 					'em'     => array(),
@@ -639,7 +711,6 @@ class Players_Controller {
 			} else {
 				$subscribe_display .= '<a href="' . esc_url( $data['url'] ) . '" target="_blank" title="' . $data['label'] . '" class="podcast-meta-itunes">' . $data['label'] . '</a>';
 			}
-
 		}
 
 		return $subscribe_display;
@@ -659,7 +730,6 @@ class Players_Controller {
 		}
 
 		if ( ! empty( $podcast_display ) || ! empty( $subscribe_display ) ) {
-
 			$meta_display .= '<div class="podcast_meta"><aside>';
 
 			$ss_podcasting_player_meta_data_enabled = get_option( 'ss_podcasting_player_meta_data_enabled', 'on' );

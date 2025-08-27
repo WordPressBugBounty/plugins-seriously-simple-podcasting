@@ -1,4 +1,10 @@
 <?php
+/**
+ * Podcast shortcode class.
+ *
+ * @package SeriouslySimplePodcasting
+ * @since 1.15.0
+ */
 
 namespace SeriouslySimplePodcasting\ShortCodes;
 
@@ -19,7 +25,8 @@ class Podcast implements Shortcode {
 
 	/**
 	 * Load ss_podcast shortcode
-	 * @param  array  $params  Shortcode attributes
+	 *
+	 * @param  array $params  Shortcode attributes.
 	 * @return string          HTML output
 	 */
 	public function shortcode( $params ) {

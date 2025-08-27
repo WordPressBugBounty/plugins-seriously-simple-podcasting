@@ -1,4 +1,9 @@
 <?php
+/**
+ * Single Episode widget class.
+ *
+ * @package SeriouslySimplePodcasting
+ */
 
 namespace SeriouslySimplePodcasting\Widgets;
 
@@ -19,39 +24,68 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @todo: Refactoring: use abstract Castos_Widget class
  */
 class Single_Episode extends WP_Widget {
+	/**
+	 * Widget CSS class.
+	 *
+	 * @var string
+	 */
 	protected $widget_cssclass;
+
+	/**
+	 * Widget description.
+	 *
+	 * @var string
+	 */
 	protected $widget_description;
+
+	/**
+	 * Widget ID base.
+	 *
+	 * @var string
+	 */
 	protected $widget_idbase;
+
+	/**
+	 * Widget title.
+	 *
+	 * @var string
+	 */
 	protected $widget_title;
 
 	/**
 	 * Constructor function.
+	 *
 	 * @since  1.9.0
 	 */
 	public function __construct() {
-		// Widget variable settings
-		$this->widget_cssclass = 'widget_podcast_episode';
+		// Widget variable settings.
+		$this->widget_cssclass    = 'widget_podcast_episode';
 		$this->widget_description = __( 'Display a single podcast episode.', 'seriously-simple-podcasting' );
-		$this->widget_idbase = 'ss_podcast';
-		$this->widget_title = __( 'Podcast: Single Episode', 'seriously-simple-podcasting' );
+		$this->widget_idbase      = 'ss_podcast';
+		$this->widget_title       = __( 'Podcast: Single Episode', 'seriously-simple-podcasting' );
 
-		// Widget settings
+		// Widget settings.
 		$widget_ops = array(
-			'classname' => $this->widget_cssclass,
-			'description' => $this->widget_description,
+			'classname'                   => $this->widget_cssclass,
+			'description'                 => $this->widget_description,
 			'customize_selective_refresh' => true,
 		);
 
-		parent::__construct('single-podcast-episode', $this->widget_title, $widget_ops);
+		parent::__construct( 'single-podcast-episode', $this->widget_title, $widget_ops );
 
 		$this->alt_option_name = 'widget_single_episode';
 
 		add_action( 'save_post', array( $this, 'flush_widget_cache' ) );
 		add_action( 'deleted_post', array( $this, 'flush_widget_cache' ) );
 		add_action( 'switch_theme', array( $this, 'flush_widget_cache' ) );
-
 	} // End __construct()
 
+	/**
+	 * Widget.
+	 *
+	 * @param array $args     Widget arguments.
+	 * @param array $instance Widget instance.
+	 */
 	public function widget( $args, $instance ) {
 		global $ss_podcasting;
 
@@ -77,17 +111,17 @@ class Single_Episode extends WP_Widget {
 
 		$episode_id = $instance['episode_id'];
 
-		if( 0 == $episode_id ) {
+		if ( 0 == $episode_id ) {
 			$ssp_episodes = ssp_episodes( 1 );
-			if( 0 < count( $ssp_episodes ) ) {
-				foreach( $ssp_episodes as $episode ) {
+			if ( 0 < count( $ssp_episodes ) ) {
+				foreach ( $ssp_episodes as $episode ) {
 					$episode_id = $episode->ID;
 					break;
 				}
 			}
 		}
 
-		if( ! $episode_id ) {
+		if ( ! $episode_id ) {
 			return;
 		}
 
@@ -96,10 +130,10 @@ class Single_Episode extends WP_Widget {
 		/** This filter is documented in wp-includes/default-widgets.php */
 		$title = apply_filters( 'widget_title', $title, $instance, $this->id_base );
 
-		$show_title = isset( $instance['show_title'] ) ? $instance['show_title'] : false;
+		$show_title   = isset( $instance['show_title'] ) ? $instance['show_title'] : false;
 		$show_excerpt = isset( $instance['show_excerpt'] ) ? $instance['show_excerpt'] : false;
 		$show_content = isset( $instance['show_content'] ) ? $instance['show_content'] : false;
-		$show_player = isset( $instance['show_player'] ) ? $instance['show_player'] : false;
+		$show_player  = isset( $instance['show_player'] ) ? $instance['show_player'] : false;
 		$show_details = isset( $instance['show_details'] ) ? $instance['show_details'] : false;
 
 		$content_items = array();
@@ -124,7 +158,7 @@ class Single_Episode extends WP_Widget {
 			$content_items[] = 'details';
 		}
 
-		// Get episode markup
+		// Get episode markup.
 		$html = $ss_podcasting->podcast_episode( $episode_id, $content_items, 'widget', 'standard' );
 
 		if ( ! $html ) {
@@ -149,9 +183,17 @@ class Single_Episode extends WP_Widget {
 		}
 	}
 
+	/**
+	 * Update widget.
+	 *
+	 * @param array $new_instance New instance.
+	 * @param array $old_instance Old instance.
+	 *
+	 * @return array
+	 */
 	public function update( $new_instance, $old_instance ) {
-		$instance = $old_instance;
-		$instance['title'] 		  = strip_tags( $new_instance['title'] );
+		$instance                 = $old_instance;
+		$instance['title']        = strip_tags( $new_instance['title'] );
 		$instance['episode_id']   = isset( $new_instance['episode_id'] ) ? (int) $new_instance['episode_id'] : 0;
 		$instance['show_title']   = isset( $new_instance['show_title'] ) ? (bool) $new_instance['show_title'] : false;
 		$instance['show_excerpt'] = isset( $new_instance['show_excerpt'] ) ? (bool) $new_instance['show_excerpt'] : false;
@@ -163,12 +205,20 @@ class Single_Episode extends WP_Widget {
 		return $instance;
 	}
 
+	/**
+	 * Flush widget cache.
+	 */
 	public function flush_widget_cache() {
-		wp_cache_delete('widget_single_episode', 'widget');
+		wp_cache_delete( 'widget_single_episode', 'widget' );
 	}
 
+	/**
+	 * Form.
+	 *
+	 * @param array $instance Widget instance.
+	 */
 	public function form( $instance ) {
-		$title     	  = isset( $instance['title'] ) ? esc_attr( $instance['title'] ) : '';
+		$title        = isset( $instance['title'] ) ? esc_attr( $instance['title'] ) : '';
 		$episode_id   = isset( $instance['episode_id'] ) ? $instance['episode_id'] : 0;
 		$show_title   = isset( $instance['show_title'] ) ? (bool) $instance['show_title'] : false;
 		$show_excerpt = isset( $instance['show_excerpt'] ) ? (bool) $instance['show_excerpt'] : false;
@@ -176,9 +226,9 @@ class Single_Episode extends WP_Widget {
 		$show_player  = isset( $instance['show_player'] ) ? (bool) $instance['show_player'] : false;
 		$show_details = isset( $instance['show_details'] ) ? (bool) $instance['show_details'] : false;
 
-		// Get all podcast episodes
+		// Get all podcast episodes.
 		$episode_ids = (array) ssp_episode_ids();
-?>
+		?>
 		<p><label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'seriously-simple-podcasting' ); ?></label>
 		<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" placeholder="<?php _e( 'Use episode title', 'seriously-simple-podcasting' ); ?>" value="<?php echo $title; ?>" /></p>
 
@@ -207,7 +257,7 @@ class Single_Episode extends WP_Widget {
 
 		<p><input class="checkbox" type="checkbox" <?php checked( $show_details ); ?> id="<?php echo $this->get_field_id( 'show_details' ); ?>" name="<?php echo $this->get_field_name( 'show_details' ); ?>" />
 		<label for="<?php echo $this->get_field_id( 'show_details' ); ?>"><?php _e( 'Display episode details?', 'seriously-simple-podcasting' ); ?></label></p>
-<?php
+		<?php
 	}
 } // End Class
 

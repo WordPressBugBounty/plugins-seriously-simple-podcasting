@@ -1,4 +1,10 @@
 <?php
+/**
+ * Player shortcode class.
+ *
+ * @package SeriouslySimplePodcasting
+ * @since 1.19.6
+ */
 
 namespace SeriouslySimplePodcasting\ShortCodes;
 
@@ -18,8 +24,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Player implements Shortcode {
 
 	/**
-	 * Load ss_player shortcode
-	 * @return string          HTML output
+	 * Load ss_player shortcode.
+	 *
+	 * @param array $params Shortcode parameters.
+	 *
+	 * @return string HTML output.
 	 */
 	public function shortcode( $params ) {
 
@@ -34,7 +43,7 @@ class Player implements Shortcode {
 
 		$current_post = get_post();
 
-		// only render if this is a valid podcast type
+		// Only render if this is a valid podcast type.
 		if ( ! in_array( $current_post->post_type, ssp_post_types( true ), true ) ) {
 			return '';
 		}
@@ -49,5 +58,4 @@ class Player implements Shortcode {
 
 		return $frontent_controller->load_media_player( $file, $episode_id, $player_style, 'shortcode' );
 	}
-
 }

@@ -1,4 +1,12 @@
 <?php
+/**
+ * Elementor Subscribe Buttons Widget
+ *
+ * Elementor widget for displaying subscribe buttons.
+ *
+ * @package Seriously Simple Podcasting
+ * @since 2.4.0
+ */
 
 namespace SeriouslySimplePodcasting\Integrations\Elementor\Widgets;
 
@@ -7,6 +15,14 @@ use Elementor\Widget_Base;
 use Exception;
 use SeriouslySimplePodcasting\Traits\Elementor_Widget_Helper;
 
+/**
+ * Subscribe Buttons Widget Class
+ *
+ * Elementor widget for displaying subscribe buttons.
+ *
+ * @package SeriouslySimplePodcasting\Integrations\Elementor\Widgets
+ * @since 2.4.0
+ */
 class Elementor_Subscribe_Buttons_Widget extends Widget_Base {
 
 	use Elementor_Widget_Helper;
@@ -15,9 +31,9 @@ class Elementor_Subscribe_Buttons_Widget extends Widget_Base {
 	 * Class constructor.
 	 *
 	 * @param array $data Widget data.
-	 * @param null $args Widget arguments.
+	 * @param null  $args Widget arguments.
 	 *
-	 * @throws Exception
+	 * @throws Exception When widget initialization fails.
 	 */
 	public function __construct( $data = array(), $args = null ) {
 		parent::__construct( $data, $args );
@@ -34,30 +50,53 @@ class Elementor_Subscribe_Buttons_Widget extends Widget_Base {
 		wp_enqueue_style( 'ssp-subscribe-buttons' );
 	}
 
+	/**
+	 * Get widget name.
+	 *
+	 * @return string
+	 */
 	public function get_name() {
 		return 'Subscribe Buttons';
 	}
 
+	/**
+	 * Get widget title.
+	 *
+	 * @return string
+	 */
 	public function get_title() {
 		return __( 'Subscribe Buttons', 'seriously-simple-podcasting' );
 	}
 
+	/**
+	 * Get widget icon.
+	 *
+	 * @return string
+	 */
 	public function get_icon() {
 		return 'eicon-link';
 	}
 
+	/**
+	 * Get widget categories.
+	 *
+	 * @return array
+	 */
 	public function get_categories() {
-		return [ 'podcasting' ];
+		return array( 'podcasting' );
 	}
 
+	/**
+	 * Register widget controls.
+	 */
 	protected function register_controls() {
 
 		$this->start_controls_section(
 			'content_section',
-			[
+			array(
 				'label' => __( 'Content', 'seriously-simple-podcasting' ),
 				'tab'   => Controls_Manager::TAB_CONTENT,
-			]
+			)
 		);
 
 		$this->add_control( 'show_elements', $this->get_select_podcast_settings( false ) );
@@ -65,6 +104,9 @@ class Elementor_Subscribe_Buttons_Widget extends Widget_Base {
 		$this->end_controls_section();
 	}
 
+	/**
+	 * Render widget output.
+	 */
 	protected function render() {
 		$settings    = $this->get_settings_for_display();
 		$series_id   = $settings['show_elements'];
@@ -97,5 +139,4 @@ class Elementor_Subscribe_Buttons_Widget extends Widget_Base {
 	public function render_plain_content() {
 		echo '';
 	}
-
 }

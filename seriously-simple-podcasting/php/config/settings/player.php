@@ -1,10 +1,15 @@
 <?php
 /**
+ * Player settings configuration.
+ *
  * @var string $player_style
  * @var bool $is_meta_data_enabled
  * @var bool $is_custom_colors_enabled
  * @var array $color_settings
- * */
+ *
+ * @package SeriouslySimplePodcasting
+ */
+
 $player_settings = array(
 	'title'       => __( 'Player', 'seriously-simple-podcasting' ),
 	'description' => __( 'Player Settings', 'seriously-simple-podcasting' ),
@@ -73,8 +78,8 @@ if ( 'larger' === $player_style ) {
 			'description' => __( 'Choose between Dark or Light mode, depending on your theme', 'seriously-simple-podcasting' ),
 			'type'        => 'radio',
 			'options'     => array(
-				'dark'   => __( 'Dark Mode', 'seriously-simple-podcasting' ),
-				'light'  => __( 'Light Mode', 'seriously-simple-podcasting' ),
+				'dark'  => __( 'Dark Mode', 'seriously-simple-podcasting' ),
+				'light' => __( 'Light Mode', 'seriously-simple-podcasting' ),
 			),
 			'default'     => 'dark',
 		),

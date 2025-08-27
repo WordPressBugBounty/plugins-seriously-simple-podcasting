@@ -1,4 +1,12 @@
 <?php
+/**
+ * REST API Controller class.
+ *
+ * Extending the WP REST API for Seriously Simple Podcasting.
+ *
+ * @package SeriouslySimplePodcasting
+ * @since 1.19.12
+ */
 
 namespace SeriouslySimplePodcasting\Rest;
 
@@ -17,19 +25,23 @@ use SeriouslySimplePodcasting\Repositories\Episode_Repository;
 class Rest_Api_Controller {
 
 	/**
-	 * @var Episode_Repository $episode_repository
-	 * */
+	 * Episode repository instance.
+	 *
+	 * @var Episode_Repository
+	 */
 	protected $episode_repository;
 
 	/**
+	 * Series handler instance.
+	 *
 	 * @var Series_Handler
-	 * */
+	 */
 	protected $series_handler;
 
 	/**
-	 * Gets the default podcast data
+	 * Gets the default podcast data.
 	 *
-	 * @return array Podcast
+	 * @return array Podcast data array.
 	 */
 	private function get_default_podcast_settings() {
 		$series_id = 0;
@@ -57,15 +69,15 @@ class Rest_Api_Controller {
 	}
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
-	 * @param Episode_Repository $episode_repository
+	 * @param Episode_Repository $episode_repository Episode repository instance.
+	 * @param Series_Handler     $series_handler     Series handler instance.
 	 */
 	public function __construct( $episode_repository, $series_handler ) {
 
 		$this->episode_repository = $episode_repository;
-		$this->series_handler = $series_handler;
-
+		$this->series_handler     = $series_handler;
 
 		// Register custom REST API routes.
 		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
@@ -101,7 +113,7 @@ class Rest_Api_Controller {
 	/**
 	 *
 	 * @param \WP_REST_Response $response
-	 * @param \WP_Term $item
+	 * @param \WP_Term          $item
 	 *
 	 * @return \WP_REST_Response
 	 */
@@ -130,8 +142,8 @@ class Rest_Api_Controller {
 	/**
 	 *
 	 * @param \WP_REST_Response $response
-	 * @param \WP_REST_Server $rest_server
-	 * @param \WP_REST_Request $request
+	 * @param \WP_REST_Server   $rest_server
+	 * @param \WP_REST_Request  $request
 	 *
 	 * @return \WP_REST_Response
 	 */
@@ -154,7 +166,7 @@ class Rest_Api_Controller {
 	 */
 	public function rest_prepare_excerpt( $response, $post, $request ) {
 		if ( $response && isset( $response->data['excerpt']['rendered'] ) &&
-		     'excerpt' === $response->data['excerpt']['rendered'] ) {
+			'excerpt' === $response->data['excerpt']['rendered'] ) {
 			$response->data['excerpt']['rendered'] = get_the_excerpt();
 		}
 
@@ -224,6 +236,7 @@ class Rest_Api_Controller {
 
 	/**
 	 * Updates a podcast after a Castos import
+	 *
 	 * @deprecated
 	 *
 	 * @return array
@@ -272,13 +285,16 @@ class Rest_Api_Controller {
 	 */
 	public function get_episode_audio_player() {
 		$podcast_id = ( isset( $_GET['ssp_podcast_id'] ) ? filter_var( $_GET['ssp_podcast_id'], FILTER_DEFAULT ) : '' );
-		$file   = $this->episode_repository->get_passthrough_url( $podcast_id );
-		$params = array( 'src' => $file, 'preload' => 'none' );
+		$file       = $this->episode_repository->get_passthrough_url( $podcast_id );
+		$params     = array(
+			'src'     => $file,
+			'preload' => 'none',
+		);
 
 		return array(
 			'id'           => $podcast_id,
 			'file'         => $file,
-			'audio_player' => wp_audio_shortcode( $params )
+			'audio_player' => wp_audio_shortcode( $params ),
 		);
 	}
 
@@ -309,12 +325,12 @@ class Rest_Api_Controller {
 	 * @return mixed
 	 */
 	public function series_get_field_value( $data, $field_name, $request ) {
-		$podcast            = $this->get_default_podcast_settings();
-		$field_value        = $podcast[ $field_name ];
-		$series_id          = $data['id'];
+		$podcast     = $this->get_default_podcast_settings();
+		$field_value = $podcast[ $field_name ];
+		$series_id   = $data['id'];
 
 		// Categories are treated differently then other fields.
-		if( in_array( $field_name, ['category1', 'category2', 'category3'] ) ){
+		if ( in_array( $field_name, array( 'category1', 'category2', 'category3' ) ) ) {
 			$res = $this->get_podcast_categories( $field_name, $series_id );
 			return $res;
 		}
@@ -331,27 +347,27 @@ class Rest_Api_Controller {
 	 * Gets the podcast category and subcategory for the series.
 	 *
 	 * @param string $field_name API field name.
-	 * @param int $series_id Series ID.
+	 * @param int    $series_id Series ID.
 	 *
 	 * @return array Array of category and subcategory.
 	 */
 	protected function get_podcast_categories( $field_name, $series_id ) {
-		$fields_map = [
+		$fields_map = array(
 			'category1' => 'category',
 			'category2' => 'category2',
 			'category3' => 'category3',
-		];
+		);
 
 		if ( ! isset( $fields_map[ $field_name ] ) ) {
-			return [];
+			return array();
 		}
 
 		$base = $fields_map[ $field_name ];
 
-		return [
+		return array(
 			'category'    => get_option( "ss_podcasting_data_{$base}_{$series_id}", '' ),
 			'subcategory' => get_option( "ss_podcasting_data_sub{$base}_{$series_id}", '' ),
-		];
+		);
 	}
 
 	/**
@@ -541,7 +557,10 @@ class Rest_Api_Controller {
 				return;
 			}
 			$file   = $this->episode_repository->get_passthrough_url( $object['id'] );
-			$params = array( 'src' => $file, 'preload' => 'none' );
+			$params = array(
+				'src'     => $file,
+				'preload' => 'none',
+			);
 			return wp_audio_shortcode( $params );
 		}
 
@@ -569,10 +588,10 @@ class Rest_Api_Controller {
 			if ( ssp_is_connected_to_castos() ) {
 				$player_data['syncStatus'] = array(
 					'isSynced' => Sync_Status::SYNC_STATUS_SYNCED === $sync_status->status,
-					'status' => $sync_status->status,
-					'error' => $sync_status->error,
-					'message' => $sync_status->message,
-					'title' => $sync_status->title,
+					'status'   => $sync_status->status,
+					'error'    => $sync_status->error,
+					'message'  => $sync_status->message,
+					'title'    => $sync_status->title,
 				);
 			}
 
@@ -581,5 +600,4 @@ class Rest_Api_Controller {
 
 		return false;
 	}
-
 }

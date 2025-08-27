@@ -4,7 +4,7 @@ Tags: podcast, audio, itunes, podcasting, playlist
 Requires at least: 5.3
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 3.11.1
+Stable tag: 3.12.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -164,6 +164,14 @@ You can find complete user and developer documentation (along with the FAQs) on 
 15. View podcast episodes in the At A Glance widget on the main WordPress dashboard.
 
 == Changelog ==
+
+= 3.12.0 =
+2025-08-27
+[FIX] Fixed Castos explicit sync functionality.
+[FIX] Fixed Podcast GUID not importing on RSS import.
+[FIX] Enhanced plugin security.
+[FIX] Reverted purple colors everywhere except settings.
+[FIX] Beautified and standardized code formatting across all PHP files.
 
 = 3.11.1 =
 2025-07-30

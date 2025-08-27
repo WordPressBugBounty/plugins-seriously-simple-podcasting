@@ -1,16 +1,15 @@
 <?php
+/**
+ * Review controller class file.
+ *
+ * @package Seriously Simple Podcasting
+ */
 
 namespace SeriouslySimplePodcasting\Controllers;
 
 use SeriouslySimplePodcasting\Handlers\Admin_Notifications_Handler;
 use SeriouslySimplePodcasting\Renderers\Renderer;
 use SeriouslySimplePodcasting\Traits\Useful_Variables;
-
-/**
- * SSP Settings
- *
- * @package Seriously Simple Podcasting
- */
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -46,19 +45,24 @@ class Review_Controller {
 
 
 	/**
+	 * Admin notifications handler instance.
+	 *
 	 * @var Admin_Notifications_Handler
-	 * */
+	 */
 	protected $notices_handler;
 
 	/**
+	 * Renderer instance.
+	 *
 	 * @var Renderer
-	 * */
+	 */
 	protected $renderer;
 
 	/**
 	 * Review_Controller constructor.
 	 *
-	 * @param Admin_Notifications_Handler $notices_handler
+	 * @param Admin_Notifications_Handler $notices_handler Handler for admin notifications.
+	 * @param Renderer                    $renderer        Renderer instance for rendering views.
 	 */
 	public function __construct( $notices_handler, $renderer ) {
 		if ( ! is_admin() || ! $this->is_podcast_related_request() ) {
@@ -86,7 +90,7 @@ class Review_Controller {
 	 */
 	protected function is_podcast_related_request() {
 		return filter_input( INPUT_GET, 'post_type' ) === SSP_CPT_PODCAST ||
-		       filter_input( INPUT_POST, 'action' ) === 'ssp_review_notice_status';
+				filter_input( INPUT_POST, 'action' ) === 'ssp_review_notice_status';
 	}
 
 	/**
@@ -95,55 +99,65 @@ class Review_Controller {
 	 * @return void
 	 */
 	public function init_ajax() {
-		add_action( 'wp_ajax_ssp_review_notice_status', function () {
-			$status = filter_input( INPUT_POST, 'status' );
-			$nonce  = filter_input( INPUT_POST, 'nonce' );
+		add_action(
+			'wp_ajax_ssp_review_notice_status',
+			function () {
+				$status = sanitize_key( (string) filter_input( INPUT_POST, 'status' ) );
+				$nonce  = (string) filter_input( INPUT_POST, 'nonce' );
 
-			$allowed_statuses = array(
-				self::STATUS_DISMISS,
-				self::STATUS_REVIEWED,
-				self::STATUS_REVIEW,
-				self::STATUS_LATER,
-			);
+				$allowed_statuses = array(
+					self::STATUS_DISMISS,
+					self::STATUS_REVIEWED,
+					self::STATUS_REVIEW,
+					self::STATUS_LATER,
+				);
 
-			if ( ! wp_verify_nonce( $nonce, 'ssp_review_notice_' . $status ) || ! in_array( $status, $allowed_statuses ) ) {
-				wp_send_json_error();
+				if ( ! wp_verify_nonce( $nonce, 'ssp_review_notice_' . $status ) || ! in_array( $status, $allowed_statuses, true ) ) {
+					wp_send_json_error();
+				}
+
+				switch ( $status ) {
+					case self::STATUS_LATER:
+						$this->schedule_review_notice( self::LATER_DELAY );
+						break;
+					default:
+						$this->update_review_status( $status );
+				}
+
+				wp_send_json_success();
 			}
-
-			switch ( $status ) {
-				case self::STATUS_LATER:
-					$this->schedule_review_notice( self::LATER_DELAY );
-					break;
-				default:
-					$this->update_review_status( $status );
-			}
-
-			wp_send_json_success();
-		} );
+		);
 	}
 
 	/**
 	 * Init frontend part.
-	 * */
+	 *
+	 * @return void
+	 */
 	public function init_frontend() {
 		if ( ! $this->check_review_notice_status() ) {
 			return;
 		}
 
 		add_action( 'admin_notices', array( $this, 'display_review_notice' ), 12 );
-		add_action( 'admin_init', function () {
-			wp_enqueue_script( 'ssp_review', $this->assets_url . 'admin/js/review.js', [ 'jquery' ] );
-		} );
+		add_action(
+			'admin_init',
+			function () {
+				wp_enqueue_script( 'ssp_review', $this->assets_url . 'admin/js/review.js', array( 'jquery' ) );
+			}
+		);
 	}
 
 	/**
 	 * Checks if we need to show the review request or not, and schedules the showing if needed.
-	 * */
-	public function check_review_notice_status(){
+	 *
+	 * @return bool True if notice should be shown, false otherwise.
+	 */
+	public function check_review_notice_status() {
 		$status = ssp_get_option( self::REVIEW_STATUS_OPTION );
 
 		if ( 0 === strpos( $status, 'start_since_' ) ) {
-			$start_time = intval( str_replace( 'start_since_', '', $status ) );
+			$start_time   = intval( str_replace( 'start_since_', '', $status ) );
 			$current_time = time();
 			if ( $current_time > $start_time ) {
 				return true;
@@ -159,14 +173,19 @@ class Review_Controller {
 
 	/**
 	 * Displays review notice.
-	 * */
+	 *
+	 * @return void
+	 */
 	public function display_review_notice() {
 		$this->renderer->render( 'review-notice' );
 	}
 
 	/**
 	 * Disables review notice.
-	 * */
+	 *
+	 * @param string $status Review status to set.
+	 * @return void
+	 */
 	protected function update_review_status( $status ) {
 		ssp_update_option( self::REVIEW_STATUS_OPTION, $status );
 	}
@@ -177,7 +196,7 @@ class Review_Controller {
 	 * @param int $delay Delay in seconds.
 	 */
 	protected function schedule_review_notice( $delay ) {
-		$time = time() + $delay;
+		$time   = time() + $delay;
 		$status = 'start_since_' . $time;
 
 		ssp_update_option( self::REVIEW_STATUS_OPTION, $status );

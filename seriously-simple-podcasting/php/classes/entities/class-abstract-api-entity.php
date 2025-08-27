@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Abstract API Entity.
  *
  * @package SeriouslySimplePodcasting
  * @since 2.23.0
- * */
+ */
 
 namespace SeriouslySimplePodcasting\Entities;
 
@@ -16,23 +15,30 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Abstract API entity class.
+ *
  * @since 2.23.0
  * @author Serhiy Zakharchenko
  */
 abstract class Abstract_API_Entity extends Abstract_Entity {
 
 	/**
-	 * @var int $code
-	 * */
+	 * Response code from API.
+	 *
+	 * @var int
+	 */
 	public $code;
 
 	/**
-	 * @var string $message
-	 * */
+	 * Response message from API.
+	 *
+	 * @var string
+	 */
 	public $message;
 
 	/**
-	 * @var bool $success
-	 * */
+	 * Whether the API request was successful.
+	 *
+	 * @var bool
+	 */
 	public $success = false;
 }

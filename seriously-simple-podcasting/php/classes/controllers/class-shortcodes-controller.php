@@ -1,4 +1,9 @@
 <?php
+/**
+ * Shortcodes controller class file.
+ *
+ * @package Seriously Simple Podcasting
+ */
 
 namespace SeriouslySimplePodcasting\Controllers;
 
@@ -26,7 +31,7 @@ class Shortcodes_Controller extends Controller {
 	 * Constructor
 	 *
 	 * @param string $file Plugin base file.
-	 * @param string $version Plugin version number
+	 * @param string $version Plugin version number.
 	 */
 	public function __construct( $file, $version ) {
 		parent::__construct( $file, $version );
@@ -38,19 +43,19 @@ class Shortcodes_Controller extends Controller {
 	 * Register all relevant front end hooks and filters
 	 */
 	public function register_hooks_and_filters() {
-		// Add shortcodes
+		// Add shortcodes.
 		add_action( 'init', array( $this, 'register_shortcodes' ), 1 );
 	}
 
 	/**
 	 * Register plugin shortcodes
+	 *
 	 * @return void
 	 */
-	public function register_shortcodes () {
+	public function register_shortcodes() {
 		add_shortcode( 'ss_player', array( new Player(), 'shortcode' ) );
 		add_shortcode( 'ss_podcast', array( new Podcast(), 'shortcode' ) );
 		add_shortcode( 'podcast_episode', array( new Podcast_Episode(), 'shortcode' ) );
 		add_shortcode( 'podcast_playlist', array( new Podcast_Playlist(), 'shortcode' ) );
 	}
-
 }

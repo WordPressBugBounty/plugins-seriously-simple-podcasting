@@ -1,4 +1,9 @@
 <?php
+/**
+ * Recent Episodes widget class.
+ *
+ * @package SeriouslySimplePodcasting
+ */
 
 namespace SeriouslySimplePodcasting\Widgets;
 
@@ -20,40 +25,69 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @todo: Refactoring: use abstract Castos_Widget class
  */
 class Recent_Episodes extends WP_Widget {
+	/**
+	 * Widget CSS class.
+	 *
+	 * @var string
+	 */
 	protected $widget_cssclass;
+
+	/**
+	 * Widget description.
+	 *
+	 * @var string
+	 */
 	protected $widget_description;
+
+	/**
+	 * Widget ID base.
+	 *
+	 * @var string
+	 */
 	protected $widget_idbase;
+
+	/**
+	 * Widget title.
+	 *
+	 * @var string
+	 */
 	protected $widget_title;
 
 	/**
 	 * Constructor function.
+	 *
 	 * @since  1.8.0
 	 */
 	public function __construct() {
-		// Widget variable settings
-		$this->widget_cssclass = 'widget_recent_entries widget_recent_episodes';
+		// Widget variable settings.
+		$this->widget_cssclass    = 'widget_recent_entries widget_recent_episodes';
 		$this->widget_description = __( 'Display a list of your most recent podcast episodes.', 'seriously-simple-podcasting' );
-		$this->widget_idbase = 'ss_podcast';
-		$this->widget_title = __( 'Podcast: Recent Episodes', 'seriously-simple-podcasting' );
+		$this->widget_idbase      = 'ss_podcast';
+		$this->widget_title       = __( 'Podcast: Recent Episodes', 'seriously-simple-podcasting' );
 
-		// Widget settings
+		// Widget settings.
 		$widget_ops = array(
-			'classname' => $this->widget_cssclass,
-			'description' => $this->widget_description,
+			'classname'                   => $this->widget_cssclass,
+			'description'                 => $this->widget_description,
 			'customize_selective_refresh' => true,
 		);
 
-		parent::__construct('recent-podcast-episodes', $this->widget_title, $widget_ops);
+		parent::__construct( 'recent-podcast-episodes', $this->widget_title, $widget_ops );
 
 		$this->alt_option_name = 'widget_recent_episodes';
 
 		add_action( 'save_post', array( $this, 'flush_widget_cache' ) );
 		add_action( 'deleted_post', array( $this, 'flush_widget_cache' ) );
 		add_action( 'switch_theme', array( $this, 'flush_widget_cache' ) );
-
 	} // End __construct()
 
-	public function widget($args, $instance) {
+	/**
+	 * Widget.
+	 *
+	 * @param array $args     Widget arguments.
+	 * @param array $instance Widget instance.
+	 */
+	public function widget( $args, $instance ) {
 		$cache = array();
 		if ( ! $this->is_preview() ) {
 			$cache = wp_cache_get( 'widget_recent_episodes', 'widget' );
@@ -90,27 +124,31 @@ class Recent_Episodes extends WP_Widget {
 
 		$qry = new WP_Query( apply_filters( 'ssp_widget_recent_episodes_args', $query_args ) );
 
-		if ($qry->have_posts()) :
-?>
-		<?php echo $args['before_widget']; ?>
-		<?php if ( $title ) {
-			echo $args['before_title'] . $title . $args['after_title'];
-		} ?>
+		if ( $qry->have_posts() ) :
+			?>
+			<?php echo $args['before_widget']; ?>
+			<?php
+			if ( $title ) {
+				echo $args['before_title'] . $title . $args['after_title'];
+			}
+			?>
 		<ul>
-		<?php while ( $qry->have_posts() ) : $qry->the_post(); ?>
+			<?php
+			while ( $qry->have_posts() ) :
+				$qry->the_post();
+				?>
 			<li>
 				<a href="<?php the_permalink(); ?>"><?php get_the_title() ? the_title() : the_ID(); ?></a>
-			<?php if ( $show_date ) : ?>
+				<?php if ( $show_date ) : ?>
 				<span class="post-date"><?php echo get_the_date(); ?></span>
 			<?php endif; ?>
 			</li>
 		<?php endwhile; ?>
 		</ul>
-		<?php echo $args['after_widget']; ?>
-<?php
-		// Reset the global $the_post as this query will have stomped on it
-		wp_reset_postdata();
-
+			<?php echo $args['after_widget']; ?>
+			<?php
+			// Reset the global $the_post as this query will have stomped on it.
+			wp_reset_postdata();
 		endif;
 
 		if ( ! $this->is_preview() ) {
@@ -121,25 +159,41 @@ class Recent_Episodes extends WP_Widget {
 		}
 	}
 
+	/**
+	 * Update widget.
+	 *
+	 * @param array $new_instance New instance.
+	 * @param array $old_instance Old instance.
+	 *
+	 * @return array
+	 */
 	public function update( $new_instance, $old_instance ) {
-		$instance = $old_instance;
-		$instance['title'] = strip_tags($new_instance['title']);
-		$instance['number'] = (int) $new_instance['number'];
+		$instance              = $old_instance;
+		$instance['title']     = strip_tags( $new_instance['title'] );
+		$instance['number']    = (int) $new_instance['number'];
 		$instance['show_date'] = isset( $new_instance['show_date'] ) ? (bool) $new_instance['show_date'] : false;
 		$this->flush_widget_cache();
 
 		return $instance;
 	}
 
+	/**
+	 * Flush widget cache.
+	 */
 	public function flush_widget_cache() {
-		wp_cache_delete('widget_recent_episodes', 'widget');
+		wp_cache_delete( 'widget_recent_episodes', 'widget' );
 	}
 
+	/**
+	 * Form.
+	 *
+	 * @param array $instance Widget instance.
+	 */
 	public function form( $instance ) {
 		$title     = isset( $instance['title'] ) ? esc_attr( $instance['title'] ) : '';
 		$number    = isset( $instance['number'] ) ? absint( $instance['number'] ) : 5;
 		$show_date = isset( $instance['show_date'] ) ? (bool) $instance['show_date'] : false;
-?>
+		?>
 		<p><label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'seriously-simple-podcasting' ); ?></label>
 		<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo $title; ?>" /></p>
 
@@ -148,7 +202,7 @@ class Recent_Episodes extends WP_Widget {
 
 		<p><input class="checkbox" type="checkbox" <?php checked( $show_date ); ?> id="<?php echo $this->get_field_id( 'show_date' ); ?>" name="<?php echo $this->get_field_name( 'show_date' ); ?>" />
 		<label for="<?php echo $this->get_field_id( 'show_date' ); ?>"><?php _e( 'Display episode date?', 'seriously-simple-podcasting' ); ?></label></p>
-<?php
+		<?php
 	}
 } // End Class
 

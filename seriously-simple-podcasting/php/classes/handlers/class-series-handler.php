@@ -7,7 +7,9 @@ use SeriouslySimplePodcasting\Repositories\Episode_Repository;
 use SeriouslySimplePodcasting\Traits\Useful_Variables;
 
 /**
- * SSP Series Handler
+ * Class Series_Handler
+ *
+ * Handles podcast series (taxonomy) registration, management and settings.
  *
  * @package Seriously Simple Podcasting
  */
@@ -15,55 +17,76 @@ class Series_Handler implements Service {
 
 	use Useful_Variables;
 
+	/**
+	 * Meta key for storing series sync status.
+	 *
+	 * @var string
+	 */
 	const META_SYNC_STATUS = 'sync_status';
 
 	/**
+	 * Admin notifications handler instance.
+	 *
 	 * @var Admin_Notifications_Handler
-	 * */
+	 */
 	protected $notices_handler;
 
 	/**
+	 * Roles handler instance.
+	 *
 	 * @var Roles_Handler
-	 * */
+	 */
 	protected $roles_handler;
 
 	/**
+	 * Castos handler instance.
+	 *
 	 * @var Castos_Handler
-	 * */
+	 */
 	protected $castos_handler;
 
 	/**
+	 * Feed handler instance.
+	 *
 	 * @var Feed_Handler
-	 * */
+	 */
 	protected $feed_handler;
 
 	/**
+	 * Settings handler instance.
+	 *
 	 * @var Settings_Handler
-	 * */
+	 */
 	protected $settings_handler;
 
 	/**
+	 * Episode repository instance.
+	 *
 	 * @var Episode_Repository
-	 * */
+	 */
 	protected $episode_repository;
 
 	/**
-	 * @var int $default_series_id
-	 * */
+	 * Default series term ID.
+	 *
+	 * @var int
+	 */
 	protected $default_series_id;
 
 	/**
-	 * @param Admin_Notifications_Handler $notices_handler
-	 * @param Roles_Handler $roles_handler
-	 * @param Castos_Handler $castos_handler
-	 * @param Settings_Handler $settings_handler
-	 * @param Episode_Repository $episode_repository
+	 * Series_Handler constructor.
+	 *
+	 * @param Admin_Notifications_Handler $notices_handler     Admin notifications handler instance.
+	 * @param Roles_Handler              $roles_handler       Roles handler instance.
+	 * @param Castos_Handler             $castos_handler      Castos handler instance.
+	 * @param Settings_Handler           $settings_handler    Settings handler instance.
+	 * @param Episode_Repository         $episode_repository  Episode repository instance.
 	 */
 	public function __construct( $notices_handler, $roles_handler, $castos_handler, $settings_handler, $episode_repository ) {
-		$this->notices_handler  = $notices_handler;
-		$this->roles_handler    = $roles_handler;
-		$this->castos_handler   = $castos_handler;
-		$this->settings_handler = $settings_handler;
+		$this->notices_handler    = $notices_handler;
+		$this->roles_handler      = $roles_handler;
+		$this->castos_handler     = $castos_handler;
+		$this->settings_handler   = $settings_handler;
 		$this->episode_repository = $episode_repository;
 
 		$this->init_useful_variables();
@@ -71,6 +94,7 @@ class Series_Handler implements Service {
 
 	/**
 	 * Register taxonomies
+	 *
 	 * @return void
 	 */
 	public function register_taxonomy() {
@@ -172,22 +196,25 @@ class Series_Handler implements Service {
 	 * @return void
 	 */
 	protected function listen_updating_series_slug( $podcast_post_types, $args ) {
-		add_filter( 'pre_update_option_ss_podcasting_series_slug', function ( $slug ) use ( $podcast_post_types, $args ) {
-			$forbidden = array(
-				'podcast',
-				'category'
-			);
+		add_filter(
+			'pre_update_option_ss_podcasting_series_slug',
+			function ( $slug ) use ( $podcast_post_types, $args ) {
+				$forbidden = array(
+					'podcast',
+					'category',
+				);
 
-			$slug = empty( $slug ) || in_array( $slug, $forbidden ) ? ssp_series_slug() : $slug;
+				$slug = empty( $slug ) || in_array( $slug, $forbidden ) ? ssp_series_slug() : $slug;
 
-			$args['rewrite']['slug'] = $slug;
+				$args['rewrite']['slug'] = $slug;
 
-			// Reregister series taxonomy with the new slug and flush rewrite rules after that.
-			$this->register_series_taxonomy( $podcast_post_types, $args );
-			flush_rewrite_rules();
+				// Reregister series taxonomy with the new slug and flush rewrite rules after that.
+				$this->register_series_taxonomy( $podcast_post_types, $args );
+				flush_rewrite_rules();
 
-			return $slug;
-		} );
+				return $slug;
+			}
+		);
 	}
 
 	/**
@@ -244,7 +271,7 @@ class Series_Handler implements Service {
 	}
 
 	/**
-	 * @param int $podcast_id
+	 * @param int    $podcast_id
 	 * @param string $status
 	 *
 	 * @return bool|int|\WP_Error
@@ -267,17 +294,23 @@ class Series_Handler implements Service {
 	 *
 	 * @return \WP_Term[]
 	 */
-	public function get_feed_details_series(){
+	public function get_feed_details_series() {
 		// First should always go the default series
 		$series = array(
 			get_term_by( 'id', $this->default_series_id(), ssp_series_taxonomy() ),
 		);
 
 		// Series submenu for feed details
-		return array_merge( $series, get_terms( ssp_series_taxonomy(), array(
-			'hide_empty' => false,
-			'exclude'    => array( $this->default_series_id() ),
-		) ) );
+		return array_merge(
+			$series,
+			get_terms(
+				ssp_series_taxonomy(),
+				array(
+					'hide_empty' => false,
+					'exclude'    => array( $this->default_series_id() ),
+				)
+			)
+		);
 	}
 
 	public function enable_default_series() {
@@ -400,7 +433,6 @@ class Series_Handler implements Service {
 
 	/**
 	 * Copy the default Feed settings
-	 *
 	 *
 	 * @param int $series_id
 	 *

@@ -1,10 +1,25 @@
 <?php
+/**
+ * Elementor HTML Player Widget
+ *
+ * Elementor widget for displaying HTML audio player.
+ *
+ * @package Seriously Simple Podcasting
+ * @since 2.4.0
+ */
 
 namespace SeriouslySimplePodcasting\Integrations\Elementor\Widgets;
 
-
 use Elementor\Widget_Base;
 
+/**
+ * HTML Player Widget Class
+ *
+ * Elementor widget for displaying HTML audio player.
+ *
+ * @package SeriouslySimplePodcasting\Integrations\Elementor\Widgets
+ * @since 2.4.0
+ */
 class Elementor_Html_Player_Widget extends Widget_Base {
 
 	/**
@@ -30,22 +45,47 @@ class Elementor_Html_Player_Widget extends Widget_Base {
 		}
 	}
 
+	/**
+	 * Get widget name.
+	 *
+	 * @return string
+	 */
 	public function get_name() {
 		return 'Castos Player';
 	}
 
+	/**
+	 * Get widget title.
+	 *
+	 * @return string
+	 */
 	public function get_title() {
 		return __( 'Castos Player', 'seriously-simple-podcasting' );
 	}
 
+	/**
+	 * Get widget icon.
+	 *
+	 * @return string
+	 */
 	public function get_icon() {
 		return 'eicon-play-o';
 	}
 
+	/**
+	 * Get widget categories.
+	 *
+	 * @return array
+	 */
 	public function get_categories() {
-		return [ 'podcasting' ];
+		return array( 'podcasting' );
 	}
 
+	/**
+	 * Get episodes for widget options.
+	 *
+	 * @return array
+	 */
 	public function get_episodes() {
 		$args = array(
 			'fields'         => array( 'post_title, id' ),
@@ -55,10 +95,10 @@ class Elementor_Html_Player_Widget extends Widget_Base {
 		);
 
 		$episodes        = get_posts( $args );
-		$episode_options = [
+		$episode_options = array(
 			'-1' => __( 'Current Episode', 'seriously-simple-podcasting' ),
 			'0'  => __( 'Latest Episode', 'seriously-simple-podcasting' ),
-		];
+		);
 		foreach ( $episodes as $episode ) {
 			$episode_options[ (string) $episode->ID ] = $episode->post_title;
 		}
@@ -66,31 +106,37 @@ class Elementor_Html_Player_Widget extends Widget_Base {
 		return $episode_options;
 	}
 
+	/**
+	 * Register widget controls.
+	 */
 	protected function register_controls() {
 
 		$this->start_controls_section(
 			'content_section',
-			[
+			array(
 				'label' => __( 'Content', 'seriously-simple-podcasting' ),
 				'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
-			]
+			)
 		);
 
 		$episode_options = $this->get_episodes();
 
 		$this->add_control(
 			'show_elements',
-			[
+			array(
 				'label'   => __( 'Select Episode', 'seriously-simple-podcasting' ),
 				'type'    => \Elementor\Controls_Manager::SELECT2,
 				'options' => $episode_options,
 				'default' => '-1',
-			]
+			)
 		);
 
 		$this->end_controls_section();
 	}
 
+	/**
+	 * Render widget output.
+	 */
 	protected function render() {
 		$players_controller = ssp_app()->players_controller;
 		$settings           = $this->get_settings_for_display();

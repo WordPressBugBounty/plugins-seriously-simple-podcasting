@@ -1,8 +1,9 @@
 <?php
 /**
- * WPSEO plugin file.
+ * Yoast SEO Podcast Series Schema.
  *
- * @package Yoast\WP\SEO\Generators\Schema
+ * @package Seriously Simple Podcasting
+ * @since 2.7.3
  */
 
 namespace SeriouslySimplePodcasting\Integrations\Yoast\Schema;
@@ -30,6 +31,11 @@ class PodcastSeries extends Abstract_Schema_Piece {
 	 *
 	 * @return array $data The PodcastSeries schema.
 	 */
+	/**
+	 * Generate podcast series schema.
+	 *
+	 * @return array
+	 */
 	public function generate() {
 		$series_repository = ssp_series_repository();
 
@@ -43,12 +49,12 @@ class PodcastSeries extends Abstract_Schema_Piece {
 		$author = $this->get_series_author( $series );
 
 		$schema = array(
-			"@type"   => "PodcastSeries",
-			"@id"     => $this->context->canonical . '#/schema/podcastSeries',
-			"image"   => $series_repository->get_image_src( $series ),
-			"url"     => $this->context->canonical,
-			"name"    => $this->context->title,
-			"webFeed" => $series_repository->get_feed_url( $series ),
+			'@type'   => 'PodcastSeries',
+			'@id'     => $this->context->canonical . '#/schema/podcastSeries',
+			'image'   => $series_repository->get_image_src( $series ),
+			'url'     => $this->context->canonical,
+			'name'    => $this->context->title,
+			'webFeed' => $series_repository->get_feed_url( $series ),
 		);
 
 		if ( $description ) {
@@ -56,17 +62,19 @@ class PodcastSeries extends Abstract_Schema_Piece {
 		}
 
 		if ( $author ) {
-			$schema['author'] = [
-				"@type" => "Person",
-				"name"  => $author,
-			];
+			$schema['author'] = array(
+				'@type' => 'Person',
+				'name'  => $author,
+			);
 		}
 
 		return $schema;
 	}
 
 	/**
-	 * @param \WP_Term $series
+	 * Get series author.
+	 *
+	 * @param \WP_Term $series Series term object.
 	 *
 	 * @return string
 	 */

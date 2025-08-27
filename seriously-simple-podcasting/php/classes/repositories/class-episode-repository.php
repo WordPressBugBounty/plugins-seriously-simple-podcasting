@@ -1,4 +1,10 @@
 <?php
+/**
+ * Episode Repository class.
+ *
+ * @package SeriouslySimplePodcasting
+ * @since 2.4.3
+ */
 
 namespace SeriouslySimplePodcasting\Repositories;
 
@@ -25,20 +31,39 @@ class Episode_Repository implements Service {
 
 	use Useful_Variables;
 
+	/**
+	 * Meta sync status constant.
+	 *
+	 * @var string
+	 */
 	const META_SYNC_STATUS = 'sync_status';
 
+	/**
+	 * Meta sync error constant.
+	 *
+	 * @var string
+	 */
 	const META_SYNC_ERROR = 'ssp_sync_episode_error';
 
 	/**
-	 * @var Feed_Handler $feed_handler
-	 * */
+	 * Feed handler instance.
+	 *
+	 * @var Feed_Handler
+	 */
 	protected $feed_handler;
 
 	/**
-	 * @var \wpdb $db
-	 * */
+	 * Database instance.
+	 *
+	 * @var \wpdb
+	 */
 	protected $db;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param Feed_Handler $feed_handler Feed handler instance.
+	 */
 	public function __construct( $feed_handler ) {
 		$this->init_useful_variables();
 		$this->feed_handler = $feed_handler;
@@ -49,6 +74,8 @@ class Episode_Repository implements Service {
 
 
 	/**
+	 * Get scheduled episodes.
+	 *
 	 * @return \WP_Post[]
 	 */
 	public function get_scheduled_episodes() {
@@ -70,7 +97,9 @@ class Episode_Repository implements Service {
 	}
 
 	/**
-	 * @param int $id
+	 * Get episodes by Podmotor episode ID.
+	 *
+	 * @param int $id Podmotor episode ID.
 	 *
 	 * @return int[]
 	 */
@@ -87,7 +116,9 @@ class Episode_Repository implements Service {
 	}
 
 	/**
-	 * @param int $id
+	 * Get episodes by Podmotor file ID.
+	 *
+	 * @param int $id Podmotor file ID.
 	 *
 	 * @return int[]
 	 */
@@ -166,7 +197,6 @@ class Episode_Repository implements Service {
 	 * @param $id
 	 *
 	 * @return string
-	 *
 	 */
 	public function get_feed_url( $id ) {
 		$feed_series = 'default';
@@ -295,10 +325,10 @@ class Episode_Repository implements Service {
 			'posts_per_page' => $max,
 		);
 
-		$tax_query = ( 0 === $podcast_id ) ?
+		$tax_query                 = ( 0 === $podcast_id ) ?
 			array(
 				'taxonomy' => ssp_series_taxonomy(),
-				'operator' => 'NOT EXISTS'
+				'operator' => 'NOT EXISTS',
 			) :
 			array(
 				'taxonomy' => ssp_series_taxonomy(),
@@ -306,7 +336,6 @@ class Episode_Repository implements Service {
 				'terms'    => $podcast_id,
 			);
 		$query_args['tax_query'][] = $tax_query;
-
 
 		// Fetch all episodes for display
 		return get_posts( $query_args );
@@ -336,7 +365,7 @@ class Episode_Repository implements Service {
 		$file_id           = $this->get_podmotor_file_id( $post_id );
 		$castos_episode_id = $this->get_podmotor_episode_id( $post_id );
 
-		if( Sync_Status::SYNC_STATUS_SYNCING === $status ){
+		if ( Sync_Status::SYNC_STATUS_SYNCING === $status ) {
 			do_action( 'ssp_check_episode_sync_status', $post_id, $status );
 			$status = $this->get_episode_sync_status_option( $post_id );
 		}
@@ -357,7 +386,7 @@ class Episode_Repository implements Service {
 	}
 
 	/**
-	 * @param int $post_id
+	 * @param int         $post_id
 	 * @param Sync_Status $status
 	 *
 	 * @return Sync_Status
@@ -474,7 +503,7 @@ class Episode_Repository implements Service {
 	}
 
 	/**
-	 * @param int $episode_id
+	 * @param int    $episode_id
 	 * @param string $status
 	 *
 	 * @return bool|int
@@ -562,7 +591,7 @@ class Episode_Repository implements Service {
 	/**
 	 * Sets up the template data for the HTML5 player, based on the episode id passed.
 	 *
-	 * @param int $id Episode id, 0 for current, -1 for latest
+	 * @param int      $id Episode id, 0 for current, -1 for latest
 	 * @param \WP_Post $current_post Current post
 	 *
 	 * @return array
@@ -614,11 +643,11 @@ class Episode_Repository implements Service {
 			if ( ssp_episode_passthrough_required( $id ) ) {
 				$audio_file = $this->get_passthrough_url( $id );
 			}
-			$album_art        = $this->get_album_art( $id, 'thumbnail' );
-			$podcast_title    = $this->get_podcast_title( $id );
-			$feed_url         = $this->get_feed_url( $id );
-			$embed_code       = preg_replace( '/(\r?\n){2,}/', '\n\n', get_post_embed_html( 500, 350, $current_post ) );
-			$subscribe_links  = $options_handler->get_subscribe_urls( $id, 'subscribe_buttons' );
+			$album_art       = $this->get_album_art( $id, 'thumbnail' );
+			$podcast_title   = $this->get_podcast_title( $id );
+			$feed_url        = $this->get_feed_url( $id );
+			$embed_code      = preg_replace( '/(\r?\n){2,}/', '\n\n', get_post_embed_html( 500, 350, $current_post ) );
+			$subscribe_links = $options_handler->get_subscribe_urls( $id, 'subscribe_buttons' );
 
 			// set any other info
 			$template_data = array(
@@ -647,8 +676,6 @@ class Episode_Repository implements Service {
 		} catch ( \Exception $e ) {
 			return apply_filters( 'ssp_html_player_data', array() );
 		}
-
-
 	}
 
 	protected function format_post_date( $post_date, $format = 'M j, Y' ) {
@@ -699,7 +726,7 @@ class Episode_Repository implements Service {
 
 			// Avoid extensions if possible because the new NGINX version can't handle it properly.
 			if ( ssp_episode_passthrough_required( $episode_id ) ) {
-				$ext = pathinfo( $file, PATHINFO_EXTENSION );
+				$ext   = pathinfo( $file, PATHINFO_EXTENSION );
 				$link .= $ext ? '.' . $ext : '.mp3';
 			}
 		} else {
@@ -835,7 +862,6 @@ class Episode_Repository implements Service {
 		$image_data_array = $this->get_no_album_art_image_array();
 
 		return apply_filters( 'ssp_album_art', $image_data_array, $episode_id, $size, 'no_album_art_image' );
-
 	}
 
 	/**
@@ -991,7 +1017,7 @@ class Episode_Repository implements Service {
 
 			// Include media functions if necessary
 			if ( ! function_exists( 'wp_read_audio_metadata' ) ) {
-				require_once( ABSPATH . 'wp-admin/includes/media.php' );
+				require_once ABSPATH . 'wp-admin/includes/media.php';
 			}
 
 			// translate file URL to local file path if possible
@@ -1008,7 +1034,13 @@ class Episode_Repository implements Service {
 			} else {
 
 				// get file data (for remote file)
-				$data = wp_remote_head( $file, array( 'timeout' => 10, 'redirection' => 5 ) );
+				$data = wp_remote_head(
+					$file,
+					array(
+						'timeout'     => 10,
+						'redirection' => 5,
+					)
+				);
 
 				if ( ! is_wp_error( $data ) && is_array( $data ) && isset( $data['headers']['content-length'] ) ) {
 					$raw       = $data['headers']['content-length'];
@@ -1017,15 +1049,13 @@ class Episode_Repository implements Service {
 			}
 
 			if ( $raw || $formatted ) {
-
 				$size = array(
 					'raw'       => $raw,
-					'formatted' => $formatted
+					'formatted' => $formatted,
 				);
 
 				return apply_filters( 'ssp_file_size', $size, $file );
 			}
-
 		}
 
 		return false;
@@ -1051,7 +1081,7 @@ class Episode_Repository implements Service {
 
 			// Include media functions if necessary
 			if ( ! function_exists( 'wp_read_audio_metadata' ) ) {
-				require_once( ABSPATH . 'wp-admin/includes/media.php' );
+				require_once ABSPATH . 'wp-admin/includes/media.php';
 			}
 
 			// translate file URL to local file path if possible
@@ -1065,17 +1095,14 @@ class Episode_Repository implements Service {
 			if ( $data ) {
 				if ( isset( $data['length_formatted'] ) && strlen( $data['length_formatted'] ) > 0 ) {
 					$duration = $data['length_formatted'];
-				} else {
-					if ( isset( $data['length'] ) && strlen( $data['length'] ) > 0 ) {
+				} elseif ( isset( $data['length'] ) && strlen( $data['length'] ) > 0 ) {
 						$duration = gmdate( 'H:i:s', $data['length'] );
-					}
 				}
 			}
 
 			if ( $data ) {
 				return apply_filters( 'ssp_file_duration', $duration, $file );
 			}
-
 		}
 
 		return false;
@@ -1092,7 +1119,6 @@ class Episode_Repository implements Service {
 	protected function format_bytes( $size, $precision = 2 ) {
 
 		if ( $size ) {
-
 			$base           = log( $size ) / log( 1024 );
 			$suffixes       = array( '', 'k', 'M', 'G', 'T' );
 			$formatted_size = round( pow( 1024, $base - floor( $base ) ), $precision ) . $suffixes[ floor( $base ) ];
@@ -1146,6 +1172,7 @@ class Episode_Repository implements Service {
 
 	/**
 	 * Get episode from audio file
+	 *
 	 * @param  string $file File name & path
 	 * @return object       Episode post object
 	 */
@@ -1155,21 +1182,21 @@ class Episode_Repository implements Service {
 		$episode = false;
 
 		if ( $file != '' ) {
-
 			$post_types = ssp_post_types( true );
 
 			$args = array(
-				'post_type' => $post_types,
-				'post_status' => 'publish',
+				'post_type'      => $post_types,
+				'post_status'    => 'publish',
 				'posts_per_page' => 1,
-				'meta_key' => 'audio_file',
-				'meta_value' => $file
+				'meta_key'       => 'audio_file',
+				'meta_value'     => $file,
 			);
 
 			$qry = new WP_Query( $args );
 
 			if ( $qry->have_posts() ) {
-				while ( $qry->have_posts() ) { $qry->the_post();
+				while ( $qry->have_posts() ) {
+					$qry->the_post();
 					$episode = $post;
 					break;
 				}
@@ -1177,6 +1204,5 @@ class Episode_Repository implements Service {
 		}
 
 		return apply_filters( 'ssp_episode_from_file', $episode, $file );
-
 	}
 }
