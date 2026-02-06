@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInita21e981c4066e9904886ed50c6e6cf6a
+class ComposerStaticInit7c62f253573551aa1efeaf9663df9100
 {
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
@@ -59,6 +59,7 @@ class ComposerStaticInita21e981c4066e9904886ed50c6e6cf6a
         'SeriouslySimplePodcasting\\Helpers\\Log_Helper' => __DIR__ . '/../..' . '/php/classes/helpers/class-log-helper.php',
         'SeriouslySimplePodcasting\\Integrations\\Abstract_Integrator' => __DIR__ . '/../..' . '/php/classes/integrations/class-abstract-integrator.php',
         'SeriouslySimplePodcasting\\Integrations\\Blocks\\Castos_Blocks' => __DIR__ . '/../..' . '/php/classes/integrations/blocks/class-castos-blocks.php',
+        'SeriouslySimplePodcasting\\Integrations\\Blocks\\Ssp_Podcasts_Block' => __DIR__ . '/../..' . '/php/classes/integrations/blocks/class-ssp-podcasts-block.php',
         'SeriouslySimplePodcasting\\Integrations\\Elementor\\Elementor_Template_Importer' => __DIR__ . '/../..' . '/php/classes/integrations/elementor/class-elementor-template-importer.php',
         'SeriouslySimplePodcasting\\Integrations\\Elementor\\Elementor_Widgets' => __DIR__ . '/../..' . '/php/classes/integrations/elementor/class-elementor-widgets.php',
         'SeriouslySimplePodcasting\\Integrations\\Elementor\\Settings_Extender' => __DIR__ . '/../..' . '/php/classes/integrations/elementor/class-settings-extender.php',
@@ -85,6 +86,7 @@ class ComposerStaticInita21e981c4066e9904886ed50c6e6cf6a
         'SeriouslySimplePodcasting\\ShortCodes\\Player' => __DIR__ . '/../..' . '/php/classes/shortcodes/class-player.php',
         'SeriouslySimplePodcasting\\ShortCodes\\Podcast' => __DIR__ . '/../..' . '/php/classes/shortcodes/class-podcast.php',
         'SeriouslySimplePodcasting\\ShortCodes\\Podcast_Episode' => __DIR__ . '/../..' . '/php/classes/shortcodes/class-podcast-episode.php',
+        'SeriouslySimplePodcasting\\ShortCodes\\Podcast_List' => __DIR__ . '/../..' . '/php/classes/shortcodes/class-podcast-list.php',
         'SeriouslySimplePodcasting\\ShortCodes\\Podcast_Playlist' => __DIR__ . '/../..' . '/php/classes/shortcodes/class-podcast-playlist.php',
         'SeriouslySimplePodcasting\\ShortCodes\\Shortcode' => __DIR__ . '/../..' . '/php/classes/shortcodes/interface-shortcode.php',
         'SeriouslySimplePodcasting\\Traits\\Elementor_Widget_Helper' => __DIR__ . '/../..' . '/php/classes/traits/trait-elementor-widget-helper.php',
@@ -102,7 +104,7 @@ class ComposerStaticInita21e981c4066e9904886ed50c6e6cf6a
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInita21e981c4066e9904886ed50c6e6cf6a::$classMap;
+            $loader->classMap = ComposerStaticInit7c62f253573551aa1efeaf9663df9100::$classMap;
 
         }, null, ClassLoader::class);
     }

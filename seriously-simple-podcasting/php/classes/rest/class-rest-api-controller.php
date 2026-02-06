@@ -39,6 +39,20 @@ class Rest_Api_Controller {
 	protected $series_handler;
 
 	/**
+	 * Whether cookie authentication has been checked for current request.
+	 *
+	 * @var bool
+	 */
+	private $cookie_authenticated = false;
+
+	/**
+	 * Whether Castos authentication is valid for current request.
+	 *
+	 * @var bool|null
+	 */
+	private $castos_authenticated = null;
+
+	/**
 	 * Gets the default podcast data.
 	 *
 	 * @return array Podcast data array.
@@ -103,6 +117,7 @@ class Rest_Api_Controller {
 		$post_types = ssp_post_types( true, false );
 		foreach ( $post_types as $post_type ) {
 			add_filter( 'rest_prepare_' . $post_type, array( $this, 'rest_prepare_excerpt' ), 10, 3 );
+			add_filter( 'rest_prepare_' . $post_type, array( $this, 'maybe_hide_meta_for_private_podcast' ), 10, 3 );
 		}
 
 		$series_taxonomy = ssp_series_taxonomy();
@@ -174,6 +189,53 @@ class Rest_Api_Controller {
 	}
 
 	/**
+	 * Conditionally hides meta field if episode belongs to a private podcast series.
+	 *
+	 * Works for both custom SSP endpoints and WordPress core REST API endpoints.
+	 *
+	 * @param \WP_REST_Response $response Response data object.
+	 * @param \WP_Post          $post     Post object.
+	 * @param \WP_REST_Request  $request  Request object.
+	 *
+	 * @return \WP_REST_Response Modified response.
+	 */
+	public function maybe_hide_meta_for_private_podcast( $response, $post, $request ) {
+		// Authenticate user from cookie if needed (only once per request)
+		if ( ! $this->cookie_authenticated ) {
+			static::authenticate_user_from_cookie();
+			$this->cookie_authenticated = true;
+		}
+
+		// Check if request has valid Castos authentication (only once per request)
+		if ( null === $this->castos_authenticated ) {
+			$this->castos_authenticated = true === Episodes_Rest_Controller::validate_castos_authentication( $request, array() );
+		}
+
+		// If Castos-authenticated or user has edit permission, show meta
+		if ( $this->castos_authenticated || current_user_can( 'edit_post', $post->ID ) ) {
+			return $response;
+		}
+
+		$terms = wp_get_post_terms( $post->ID, ssp_series_taxonomy() );
+
+		// Check default podcast privacy if no series
+		if ( empty( $terms ) && 'yes' === ssp_get_option( 'is_podcast_private' ) ) {
+			unset( $response->data['meta'] );
+			return $response;
+		}
+
+		// Check if any series is private
+		foreach ( $terms as $term ) {
+			if ( 'yes' === ssp_get_option( 'is_podcast_private', '', $term->term_id ) ) {
+				unset( $response->data['meta'] );
+				break;
+			}
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Registers the custom REST API routes
 	 */
 	public function register_rest_routes() {
@@ -212,7 +274,7 @@ class Rest_Api_Controller {
 			array(
 				'methods'             => 'GET',
 				'callback'            => array( $this, 'get_episode_audio_player' ),
-				'permission_callback' => '__return_true',
+				'permission_callback' => array( $this, 'audio_player_permissions_check' ),
 			)
 		);
 
@@ -278,15 +340,68 @@ class Rest_Api_Controller {
 		return $response;
 	}
 
+
+	/**
+	 * Authenticates WordPress user from cookie for REST API requests.
+	 *
+	 * WordPress REST API sets current user to 0 if no nonce is provided (CSRF protection).
+	 * This method manually authenticates from cookie if present to allow logged-in users
+	 * to access their content via REST API.
+	 *
+	 * Can be called statically from any REST controller class.
+	 *
+	 * @return void
+	 */
+	public static function authenticate_user_from_cookie() {
+		if ( get_current_user_id() === 0 && isset( $_COOKIE[ LOGGED_IN_COOKIE ] ) ) {
+			$user_id = wp_validate_auth_cookie( $_COOKIE[ LOGGED_IN_COOKIE ], 'logged_in' );
+			if ( $user_id && $user_id > 0 ) {
+				wp_set_current_user( $user_id );
+			}
+		}
+	}
+
+	/**
+	 * Permission callback for audio player REST endpoint
+	 *
+	 * Sets up user authentication context before authorization checks run.
+	 *
+	 * Root cause: WordPress REST API cookie authentication REQUIRES a nonce (X-WP-Nonce header
+	 * or _wpnonce parameter) for CSRF protection. Without a nonce, WordPress explicitly sets
+	 * the current user to 0 during the authentication phase (see wp-includes/rest-api.php,
+	 * rest_cookie_check_errors(), line 1128). This happens BEFORE the permission_callback
+	 * is executed, regardless of whether permission_callback is __return_true or a custom callback.
+	 *
+	 * Since our endpoint may be called without a nonce (e.g., direct browser requests), we manually
+	 * authenticate from the cookie to ensure logged-in users are identified before authorization
+	 * checks in check_episode_access() run.
+	 *
+	 * @param \WP_REST_Request $request Full data about the request.
+	 *
+	 * @return bool Always returns true to allow the request, but sets up user context
+	 */
+	public function audio_player_permissions_check( $request ) {
+		// Always return true to allow the request
+		// The actual authorization is checked in get_episode_audio_player() using check_episode_access()
+		return true;
+	}
+
 	/**
 	 * Gets the podcast audio player code from wp_audio_shortcode, or null if ssp_podcast_id is not a valid podcast
 	 *
-	 * @return array $podcast Podcast data
+	 * @return array|\WP_Error $podcast Podcast data or error
 	 */
 	public function get_episode_audio_player() {
 		$podcast_id = ( isset( $_GET['ssp_podcast_id'] ) ? filter_var( $_GET['ssp_podcast_id'], FILTER_DEFAULT ) : '' );
-		$file       = $this->episode_repository->get_passthrough_url( $podcast_id );
-		$params     = array(
+
+		// Validate and authorize episode access
+		$authorization_check = $this->check_episode_access( $podcast_id );
+		if ( is_wp_error( $authorization_check ) ) {
+			return $authorization_check;
+		}
+
+		$file   = $this->episode_repository->get_passthrough_url( $podcast_id );
+		$params = array(
 			'src'     => $file,
 			'preload' => 'none',
 		);
@@ -296,6 +411,85 @@ class Rest_Api_Controller {
 			'file'         => $file,
 			'audio_player' => wp_audio_shortcode( $params ),
 		);
+	}
+
+	/**
+	 * Checks if the current user has access to the specified episode
+	 *
+	 * @param int|string $episode_id Episode ID to check
+	 *
+	 * @return true|\WP_Error True if access allowed, WP_Error if access denied
+	 */
+	protected function check_episode_access( $episode_id ) {
+
+		$this->authenticate_user_from_cookie();
+
+		// Validate episode ID
+		if ( empty( $episode_id ) ) {
+			return new \WP_Error(
+				'rest_invalid_episode_id',
+				__( 'Invalid episode ID.', 'seriously-simple-podcasting' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		// Get episode post object
+		$episode = get_post( $episode_id );
+
+		// Check if episode exists
+		if ( ! $episode || ! is_object( $episode ) || is_wp_error( $episode ) ) {
+			return new \WP_Error(
+				'rest_episode_not_found',
+				__( 'Episode not found.', 'seriously-simple-podcasting' ),
+				array( 'status' => 404 )
+			);
+		}
+
+		// Check if episode is a valid podcast post type
+		$podcast_post_types = ssp_post_types();
+		if ( ! in_array( $episode->post_type, $podcast_post_types, true ) ) {
+			return new \WP_Error(
+				'rest_invalid_post_type',
+				__( 'Invalid post type.', 'seriously-simple-podcasting' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		// Check post status and user authorization
+		$post_status_obj = get_post_status_object( $episode->post_status );
+
+		// Use WordPress's built-in permission system which handles author checks and capabilities
+		if ( 'private' === $episode->post_status ) {
+			// For private posts, check if user can read this specific post
+			// This handles: author check, read_private_posts capability, etc.
+			if ( ! current_user_can( 'read_post', $episode_id ) ) {
+				return new \WP_Error(
+					'rest_forbidden',
+					__( 'Sorry, you are not allowed to access this episode.', 'seriously-simple-podcasting' ),
+					array( 'status' => rest_authorization_required_code() )
+				);
+			}
+		} elseif ( 'draft' === $episode->post_status || 'pending' === $episode->post_status ) {
+			// Check if user can edit the post
+			if ( ! current_user_can( 'edit_post', $episode_id ) ) {
+				return new \WP_Error(
+					'rest_forbidden',
+					__( 'Sorry, you are not allowed to access this episode.', 'seriously-simple-podcasting' ),
+					array( 'status' => rest_authorization_required_code() )
+				);
+			}
+		} elseif ( ! $post_status_obj || ! $post_status_obj->public ) {
+			// Reject other non-public statuses
+			if ( ! current_user_can( 'read_post', $episode_id ) ) {
+				return new \WP_Error(
+					'rest_forbidden',
+					__( 'Sorry, you are not allowed to access this episode.', 'seriously-simple-podcasting' ),
+					array( 'status' => rest_authorization_required_code() )
+				);
+			}
+		}
+
+		return true;
 	}
 
 	/**

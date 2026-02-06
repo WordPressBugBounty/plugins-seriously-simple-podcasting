@@ -169,8 +169,8 @@ class Settings_Controller {
 	}
 
 	/**
-	 * @param $data
-	 * @param $args
+	 * @param array $data Field data.
+	 * @param array $args Field arguments.
 	 *
 	 * @return array
 	 * @throws \Exception
@@ -179,7 +179,7 @@ class Settings_Controller {
 		if ( isset( $args['field']['id'] ) && 'podcasts_sync' === $args['field']['id'] ) {
 			$data = (array) $data;
 			$res  = $this->castos_handler->get_podcasts();
-			if ( ! is_array( $res ) || empty( $res['status'] ) || 'success' !== $res['status'] || ! isset( $res['data']['podcast_list'] ) ) {
+			if ( ! is_array( $res ) || empty( $res['status'] ) || 'success' !== $res['status'] || ! isset( $res['data'] ) ) {
 				$data['statuses'] = null;
 
 				return $data;

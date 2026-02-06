@@ -700,7 +700,7 @@ if ( ! function_exists( 'convert_human_readable_to_bytes' ) ) {
 	 *
 	 * @param $formatted_size
 	 *
-	 * @return string
+	 * @return int
 	 */
 	function convert_human_readable_to_bytes( $formatted_size ) {
 
@@ -708,18 +708,23 @@ if ( ! function_exists( 'convert_human_readable_to_bytes' ) ) {
 		$formatted_size_value = trim( str_replace( $formatted_size_type, '', $formatted_size ) );
 
 		switch ( strtoupper( $formatted_size_type ) ) {
-			case 'KB':
-				return $formatted_size_value * 1024;
-			case 'MB':
-				return $formatted_size_value * pow( 1024, 2 );
-			case 'GB':
-				return $formatted_size_value * pow( 1024, 3 );
-			case 'TB':
-				return $formatted_size_value * pow( 1024, 4 );
-			case 'PB':
-				return $formatted_size_value * pow( 1024, 5 );
+			case 'K':   // Single letter (from format_bytes).
+			case 'KB':  // Two letters (standard).
+				return (int) ( $formatted_size_value * 1024 );
+			case 'M':   // Single letter (from format_bytes).
+			case 'MB':  // Two letters (standard).
+				return (int) ( $formatted_size_value * pow( 1024, 2 ) );
+			case 'G':   // Single letter (from format_bytes).
+			case 'GB':  // Two letters (standard).
+				return (int) ( $formatted_size_value * pow( 1024, 3 ) );
+			case 'T':   // Single letter (from format_bytes).
+			case 'TB':  // Two letters (standard).
+				return (int) ( $formatted_size_value * pow( 1024, 4 ) );
+			case 'P':   // Single letter (from format_bytes).
+			case 'PB':  // Two letters (standard).
+				return (int) ( $formatted_size_value * pow( 1024, 5 ) );
 			default:
-				return $formatted_size_value;
+				return (int) $formatted_size_value;
 		}
 	}
 }
@@ -1710,14 +1715,36 @@ if ( ! function_exists( 'ssp_get_podcasts' ) ) {
 	/**
 	 * Gets array of podcast terms.
 	 *
-	 * @param bool $hide_empty
+	 * @param bool  $hide_empty     Whether to hide empty terms.
+	 * @param array $additional_args Additional arguments for get_terms().
 	 *
 	 * @return WP_Term[]
+	 *
+	 * @since 2.20.3
+	 *
+	 * @filter ssp_get_podcasts_args Allows filtering of get_terms() arguments.
 	 */
-	function ssp_get_podcasts( $hide_empty = false ) {
-		$cache_key   = 'ssp_podcasts';
+	function ssp_get_podcasts( $hide_empty = false, $additional_args = array() ) {
+		// Merge default args with additional args.
+		$args = array_merge( array( 'hide_empty' => $hide_empty ), $additional_args );
+
+		// Allow filtering of the arguments before querying.
+		$args = apply_filters( 'ssp_get_podcasts_args', $args, $hide_empty, $additional_args );
+
+		$taxonomy = ssp_series_taxonomy();
+		// Create cache key based on taxonomy + filtered arguments.
+		$cache_key   = 'ssp_podcasts_' . $taxonomy . '_' . md5( serialize( $args ) );
 		$cache_group = 'ssp';
-		$podcasts    = get_terms( ssp_series_taxonomy(), array( 'hide_empty' => $hide_empty ) );
+		$podcasts    = wp_cache_get( $cache_key, $cache_group );
+
+		// Return cached result if available.
+		if ( false !== $podcasts ) {
+			return is_array( $podcasts ) ? $podcasts : array();
+		}
+
+		// Fetch podcasts and store in cache.
+		$podcasts = get_terms( $taxonomy, $args );
+		wp_cache_set( $cache_key, $podcasts, $cache_group, HOUR_IN_SECONDS );
 
 		return is_array( $podcasts ) ? $podcasts : array();
 	}
@@ -2075,5 +2102,66 @@ if ( ! function_exists( 'ssp_feed_max_episodes' ) ) {
 		}
 
 		return intval( apply_filters( 'ssp_feed_number_of_posts', $max, $series_id ) );
+	}
+}
+
+
+if ( ! function_exists( 'ssp_episode_guid' ) ) {
+	/**
+	 * Gets the episode guid.
+	 *
+	 * @since 3.13.0
+	 *
+	 * @param int $episode_id Episode ID.
+	 *
+	 * @return string The episode guid.
+	 */
+	function ssp_episode_guid( $episode_id = 0 ) {
+		if ( ! $episode_id ) {
+			$episode_id = get_the_ID();
+		}
+
+		// Check for original GUID from RSS import first
+		$original_guid = get_post_meta( $episode_id, 'ssp_original_guid', true );
+		if ( ! empty( $original_guid ) ) {
+			return apply_filters( 'ssp/episode/guid', $original_guid, $episode_id );
+		}
+
+		$guid = get_post_meta( $episode_id, 'ssp_guid', true );
+		if ( ! $guid ) {
+			$guid = get_the_guid( $episode_id );
+			update_post_meta( $episode_id, 'ssp_guid', $guid );
+		}
+
+		return apply_filters( 'ssp/episode/guid', $guid, $episode_id );
+	}
+}
+
+if ( ! function_exists( 'ssp_generate_episode_guid' ) ) {
+	/**
+	 * Generates a deterministic GUID for an episode using UUID v5.
+	 *
+	 * @since 3.14.0
+	 *
+	 * @param \WP_Post|int $episode Episode post object or episode ID.
+	 *
+	 * @return string|false Generated GUID or false on failure.
+	 */
+	function ssp_generate_episode_guid( $episode ) {
+		if ( is_numeric( $episode ) ) {
+			$episode = get_post( $episode );
+		}
+
+		if ( ! $episode || ! isset( $episode->post_date ) || ! isset( $episode->post_title ) ) {
+			return false;
+		}
+
+		// Create deterministic GUID from stable episode data
+		$episode_data = get_site_url() . '|' . $episode->post_date . '|' . $episode->post_title;
+
+		return \SeriouslySimplePodcasting\Handlers\UUID_Handler::v5(
+			\SeriouslySimplePodcasting\Handlers\Feed_Handler::EPISODE_NAMESPACE_UUID,
+			$episode_data
+		);
 	}
 }

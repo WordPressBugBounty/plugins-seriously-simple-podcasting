@@ -3,6 +3,102 @@ jQuery(document).ready(function($) {
 	// Uploading files
 	var file_frame, series_img_frame;
 
+	/**
+	 * Format bytes to human-readable format matching PHP format_bytes function
+	 *
+	 * @param {number} size File size in bytes
+	 * @param {number} precision Number of decimal places (default: 2)
+	 * @return {string|false} Formatted file size or false on failure
+	 */
+	function formatBytes( size, precision ) {
+		precision = precision || 2;
+		if ( ! size ) {
+			return false;
+		}
+
+		var base = Math.log( size ) / Math.log( 1024 );
+		var suffixes = [ '', 'k', 'M', 'G', 'T' ];
+		var value = Math.pow( 1024, base - Math.floor( base ) );
+		var roundedValue = Math.round( value * Math.pow( 10, precision ) ) / Math.pow( 10, precision );
+		var formattedSize = roundedValue + suffixes[ Math.floor( base ) ];
+
+		return formattedSize;
+	}
+
+	/**
+	 * Normalize duration string to SSP format (H:i:s with hours always included).
+	 * WordPress Media Library may provide "0:28" (no hours), but SSP uses "00:00:28" format.
+	 * If duration already has 3 parts, it's already in the correct format.
+	 *
+	 * @param {string} duration Duration string (e.g., "0:28" or "00:42:17")
+	 * @return {string} Normalized duration in H:i:s format (e.g., "00:00:28")
+	 */
+	function normalizeDurationToSspFormat( duration ) {
+		if ( ! duration || typeof duration !== 'string' ) {
+			return '';
+		}
+
+		// Parse the duration string
+		var parts = duration.split(':');
+
+		if ( parts.length !== 2 ) {
+			// This is either H:MM:SS or unknown format - return as-is
+			return duration;
+		}
+
+		// Format: "M:SS" - add hours as "00" to match SSP format
+		var minutes = parseInt( parts[0], 10 );
+		var seconds = parseInt( parts[1], 10 );
+		var pad = function( num ) {
+			return num.toString().padStart( 2, '0' );
+		};
+		return '00:' + pad( minutes ) + ':' + pad( seconds );
+	}
+
+	/**
+	 * Populate filesize, duration, and date recorded fields from a media attachment.
+	 *
+	 * @param {Object} attachment Media attachment object from wp.media (toJSON()).
+	 */
+	function populateAudioMetaFromAttachment( attachment ) {
+		// File size
+		if ( attachment.filesizeInBytes ) {
+			$( '#filesize_raw' ).val( attachment.filesizeInBytes.toString() ).trigger( 'change' );
+			var formattedSize = formatBytes( attachment.filesizeInBytes );
+			if ( formattedSize ) {
+				$( '#filesize' ).val( formattedSize ).trigger( 'change' );
+			}
+		}
+
+		// Duration
+		if ( attachment.fileLength ) {
+			var normalizedDuration = normalizeDurationToSspFormat( attachment.fileLength );
+			if ( normalizedDuration ) {
+				$( '#duration' ).val( normalizedDuration ).trigger( 'change' );
+			}
+		}
+
+		// Date recorded
+		var $dateRecorded = $( '#date_recorded' );
+		if ( $dateRecorded.length ) {
+			var attachmentDate = attachment.date ? new Date( attachment.date ) : new Date();
+			// Format date in local timezone (YYYY-MM-DD) to avoid UTC conversion issues
+			// attachment.date is a UTC timestamp, but we want the local date
+			var year = attachmentDate.getFullYear();
+			var month = String( attachmentDate.getMonth() + 1 ).padStart( 2, '0' );
+			var day = String( attachmentDate.getDate() ).padStart( 2, '0' );
+			var isoDate = year + '-' + month + '-' + day;
+			$dateRecorded.val( isoDate ).trigger( 'change' );
+
+			// Also update display field if present (datepicker display)
+			var $dateRecordedDisplay = $( '#date_recorded_display' );
+			if ( $dateRecordedDisplay.length ) {
+				var display = attachmentDate.toLocaleDateString( undefined, { day: 'numeric', month: 'long', year: 'numeric' } );
+				$dateRecordedDisplay.val( display );
+			}
+		}
+	}
+
 	$.fn.ssp_upload_media_file = function( button, validateCallback = null ) {
 		//var button_id = button.attr('id');
 		var field_class = button.data( 'field' );
@@ -26,8 +122,13 @@ jQuery(document).ready(function($) {
 			}
 
 			$('input.' + field_class).val(attachment.url).trigger('change');
-			if ( preview_class ) {
+			if ( preview_class ) {	
 				$('.' + preview_class).attr('src', attachment.url);
+			}
+
+			// Extract file size and duration from Media Library metadata for audio_file field
+			if ( field_class === 'ssp-field-audio_file' ) {
+				populateAudioMetaFromAttachment( attachment );
 			}
 		});
 

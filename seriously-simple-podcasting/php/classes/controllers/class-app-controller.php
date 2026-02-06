@@ -347,7 +347,7 @@ class App_Controller {
 
 		$this->onboarding_controller = new Onboarding_Controller( $this->renderer, $this->settings_handler );
 
-		$this->db_migration_controller = DB_Migration_Controller::instance()->init();
+		$this->db_migration_controller = DB_Migration_Controller::instance()->init( $this->admin_notices_handler );
 
 		$this->roles_handler = new Roles_Handler();
 
@@ -613,8 +613,8 @@ class App_Controller {
 	/**
 	 * Generate the dashboard widget content
 	 *
-	 * @param $widget_id
-	 * @param $feeds
+	 * @param string $widget_id Widget ID.
+	 * @param array  $feeds RSS feeds array.
 	 *
 	 * @return string the RSS feed output
 	 */
@@ -788,6 +788,9 @@ class App_Controller {
 
 			update_option( 'ssp_version', SSP_VERSION );
 			$this->upgrade_handler->run_upgrades( $previous_version );
+
+			// Flush permalinks
+			$this->activate();
 		}
 	}
 
@@ -848,7 +851,7 @@ class App_Controller {
 			isset( $_GET['nonce'] ) &&
 			wp_verify_nonce( $_GET['nonce'], 'podcast_import_action' ) &&
 			current_user_can( 'manage_podcast' )
-		) {	
+		) {
 			update_option( 'ss_podcasting_podmotor_import_podcasts', 'false' );
 		}
 	}
@@ -961,7 +964,7 @@ class App_Controller {
 	public function dismiss_categories_update() {
 		// Check if the ssp_dismiss_categories_update variable exists
 		$ssp_dismiss_categories_update = ( isset( $_GET['ssp_dismiss_categories_update'] ) ? sanitize_text_field( $_GET['ssp_dismiss_categories_update'] ) : '' );
-		
+
 		if (
 			! $ssp_dismiss_categories_update ||
 			! isset( $_GET['nonce'] ) ||

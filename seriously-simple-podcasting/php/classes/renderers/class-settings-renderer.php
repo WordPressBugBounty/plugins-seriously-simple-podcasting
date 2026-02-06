@@ -405,12 +405,13 @@ class Settings_Renderer implements Service {
 			return $html;
 		}
 
-		if ( empty( $data['statuses'] ) ) {
+		if ( ! isset( $data['statuses'] ) ) {
 			return '<div class="ssp-sync-podcast api-error">' . __( 'Castos API error', 'seriously-simple-podcasting' ) . '</div>';
 		}
 
 		foreach ( $field['options'] as $podcast_id => $v ) {
-			$status = $data['statuses'][ $podcast_id ];
+			$status = $data['statuses'][ $podcast_id ] ?? new Sync_Status( Sync_Status::SYNC_STATUS_NONE );
+			
 			/**
 			 * @var Sync_Status $status
 			 * */

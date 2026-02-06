@@ -74,10 +74,10 @@ class Castos_Blocks {
 	/**
 	 * Castos_Blocks constructor.
 	 *
-	 * @param Admin_Notifications_Handler $admin_notices_handler
-	 * @param Episode_Repository          $episode_repository
-	 * @param Players_Controller          $players_controller
-	 * @param Renderer                    $renderer
+	 * @param Admin_Notifications_Handler $admin_notices_handler Admin notifications handler instance.
+	 * @param Episode_Repository          $episode_repository    Episode repository instance.
+	 * @param Players_Controller          $players_controller    Players controller instance.
+	 * @param Renderer                    $renderer              Renderer instance.
 	 */
 	public function __construct( $admin_notices_handler, $episode_repository, $players_controller, $renderer ) {
 
@@ -104,20 +104,20 @@ class Castos_Blocks {
 	/**
 	 * Dynamic Podcast List Block callback
 	 *
-	 * @param $attributes
-	 *
-	 * @return string
+	 * @param array $attributes Block attributes.
+	 * @return string Rendered block output.
 	 */
 	public function podcast_list_render_callback( $attributes ) {
-		$paged            = ( filter_input( INPUT_GET, 'podcast_page' ) ) ?: 1;
+		$paged            = filter_input( INPUT_GET, 'podcast_page' );
+		$paged            = $paged ? $paged : 1;
 		$allowed_order_by = array( 'ID', 'title', 'date', 'recorded' );
 
 		$query_args = array(
 			'post_type'      => ssp_post_types(),
 			'podcast_id'     => ( '' === $attributes['selectedPodcast'] ) ? -1 : intval( $attributes['selectedPodcast'] ),
-			'posts_per_page' => intval( $attributes['postsPerPage'] ?: get_option( 'posts_per_page', 10 ) ),
+			'posts_per_page' => intval( isset( $attributes['postsPerPage'] ) ? $attributes['postsPerPage'] : get_option( 'posts_per_page', 10 ) ),
 			'paged'          => $paged,
-			'orderby'        => in_array( $attributes['orderBy'], $allowed_order_by ) ? $attributes['orderBy'] : 'date',
+			'orderby'        => in_array( $attributes['orderBy'], $allowed_order_by, true ) ? $attributes['orderBy'] : 'date',
 			'order'          => 'asc' === $attributes['order'] ? 'asc' : 'desc',
 		);
 
@@ -150,9 +150,10 @@ class Castos_Blocks {
 	}
 
 	/**
-	 * @param array $args
+	 * Gets podcast list episodes query.
 	 *
-	 * @return \WP_Query
+	 * @param array $args Query arguments.
+	 * @return \WP_Query Query object.
 	 */
 	protected function get_podcast_list_episodes_query( $args ) {
 
@@ -180,8 +181,8 @@ class Castos_Blocks {
 			$query_args['podcast_id'] = ssp_get_default_series_id();
 		}
 
-		// -1 stands for all episodes ( option "-- All --" )
-		if ( - 1 != $query_args['podcast_id'] ) {
+		// -1 stands for all episodes ( option "-- All --" ).
+		if ( - 1 !== $query_args['podcast_id'] ) {
 			$tax_query = array(
 				'taxonomy' => ssp_series_taxonomy(),
 			);
@@ -206,10 +207,11 @@ class Castos_Blocks {
 	}
 
 	/**
-	 * @param \WP_Query $episodes_query
-	 * @param int       $current_page
+	 * Gets podcast list paginate links.
 	 *
-	 * @return array
+	 * @param \WP_Query $episodes_query Episodes query object.
+	 * @param int       $current_page   Current page number.
+	 * @return array Paginate links array.
 	 */
 	protected function get_podcast_list_paginate_links( $episodes_query, $current_page ) {
 		$args = array(
@@ -317,10 +319,16 @@ class Castos_Blocks {
 
 		$this->register_podcast_list();
 		$this->register_playlist_player();
+		( new Ssp_Podcasts_Block() )->register();
 	}
 
 
 
+	/**
+	 * Registers the podcast list block.
+	 *
+	 * @return void
+	 */
 	protected function register_podcast_list() {
 
 		wp_register_style( 'ssp-podcast-list', esc_url( $this->assets_url . 'css/blocks/podcast-list' . $this->script_suffix . '.css' ), array(), $this->version );
@@ -440,6 +448,11 @@ class Castos_Blocks {
 		);
 	}
 
+	/**
+	 * Registers the playlist player block.
+	 *
+	 * @return void
+	 */
 	protected function register_playlist_player() {
 
 		register_block_type(
@@ -513,10 +526,12 @@ class Castos_Blocks {
 		);
 	}
 
+
 	/**
-	 * @param $term_id
+	 * Gets term slug by ID.
 	 *
-	 * @return string|null
+	 * @param int $term_id Term ID.
+	 * @return string|null Term slug or null if not found.
 	 */
 	protected function get_term_slug_by_id( $term_id ) {
 		$term = get_term_by( 'id', $term_id, ssp_series_taxonomy() );
@@ -527,7 +542,9 @@ class Castos_Blocks {
 	}
 
 	/**
-	 * @return array
+	 * Gets podcast settings for block attributes.
+	 *
+	 * @return array Podcast settings array.
 	 */
 	protected function get_podcast_settings() {
 		$default_series_id = ssp_get_default_series_id();
@@ -556,7 +573,9 @@ class Castos_Blocks {
 	}
 
 	/**
-	 * @return array
+	 * Gets tag settings for block attributes.
+	 *
+	 * @return array Tag settings array.
 	 */
 	protected function get_tag_settings() {
 		$settings = array(

@@ -26,6 +26,13 @@ class Feed_Handler implements Service {
 	const PODCAST_NAMESPACE_UUID = 'ead4c236-bf58-58c6-a2c6-a6b28d128cb6';
 
 	/**
+	 * RFC 4122 URL namespace UUID for episode GUID generation
+	 *
+	 * @see https://tools.ietf.org/html/rfc4122#section-4.3
+	 */
+	const EPISODE_NAMESPACE_UUID = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+
+	/**
 	 * @var Settings_Handler
 	 * */
 	protected $settings_handler;
@@ -523,6 +530,23 @@ class Feed_Handler implements Service {
 		$locked = ssp_get_option( 'locked', 'on', $series_id );
 
 		return 'on' === $locked ? 'yes' : 'no';
+	}
+
+	/**
+	 * Checks whether the podcast feed is blocked from iTunes.
+	 *
+	 * @since 3.13.0
+	 *
+	 * @param int $series_id
+	 *
+	 * @return bool
+	 */
+	public function is_blocked( $series_id ) {
+		$blocked = ssp_get_option( 'blocked', '', $series_id );
+
+		$is_blocked = 'on' === $blocked;
+
+		return apply_filters( 'ssp_feed_is_blocked', $is_blocked, $series_id );
 	}
 
 	/**

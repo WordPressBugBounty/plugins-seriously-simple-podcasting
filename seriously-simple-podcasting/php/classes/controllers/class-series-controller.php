@@ -275,6 +275,7 @@ class Series_Controller {
 		unset( $columns['description'] );
 		unset( $columns['posts'] );
 
+		$columns['series_id']       = __( 'ID', 'seriously-simple-podcasting' );
 		$columns['series_image']    = __( 'Podcast Image', 'seriously-simple-podcasting' );
 		$columns['series_feed_url'] = __( 'Podcast feed URL', 'seriously-simple-podcasting' );
 		$columns['posts']           = __( 'Episodes', 'seriously-simple-podcasting' );
@@ -309,6 +310,9 @@ class Series_Controller {
 <img id="{$series->name}_image_preview" src="{$source}" width="auto" height="auto" style="max-width:50px;" />
 HTML;
 				break;
+			case 'series_id':
+				$column_data = esc_html( $term_id );
+				break;
 		}
 
 		return $column_data;
@@ -336,7 +340,7 @@ HTML;
 	/**
 	 * Store the Series Feed title as the Series name
 	 *
-	 * @param $term_id
+	 * @param int $term_id Term ID.
 	 */
 	public function save_series_data_to_castos( $term_id ) {
 		if ( ! ssp_is_connected_to_castos() ) {
@@ -458,8 +462,8 @@ HTML;
 	}
 
 	/**
-	 * @param $actions
-	 * @param $tag
+	 * @param array  $actions Actions array.
+	 * @param string $tag Tag name.
 	 *
 	 * @return mixed
 	 */
