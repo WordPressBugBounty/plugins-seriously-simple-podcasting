@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'castos/seriously-simple-podcasting',
-        'pretty_version' => 'dev-develop',
-        'version' => 'dev-develop',
-        'reference' => '91a0dc7b8f256c290d0f7413c4ae66fdb55f7510',
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => 'e732b64deb116b602a45bd6ed98c3dd4794f0484',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'castos/seriously-simple-podcasting' => array(
-            'pretty_version' => 'dev-develop',
-            'version' => 'dev-develop',
-            'reference' => '91a0dc7b8f256c290d0f7413c4ae66fdb55f7510',
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => 'e732b64deb116b602a45bd6ed98c3dd4794f0484',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
