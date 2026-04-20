@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit67bdb656a14a4ccb98061608d02e2284
+class ComposerStaticInit6a478a2deb6514287617194485a1f51f
 {
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
@@ -43,6 +43,7 @@ class ComposerStaticInit67bdb656a14a4ccb98061608d02e2284
         'SeriouslySimplePodcasting\\Entities\\Sync_Status' => __DIR__ . '/../..' . '/php/classes/entities/class-sync-status.php',
         'SeriouslySimplePodcasting\\Handlers\\Admin_Notifications_Handler' => __DIR__ . '/../..' . '/php/classes/handlers/class-admin-notifications-handler.php',
         'SeriouslySimplePodcasting\\Handlers\\Ajax_Handler' => __DIR__ . '/../..' . '/php/classes/handlers/class-ajax-handler.php',
+        'SeriouslySimplePodcasting\\Handlers\\Archive_Page_Handler' => __DIR__ . '/../..' . '/php/classes/handlers/class-archive-page-handler.php',
         'SeriouslySimplePodcasting\\Handlers\\CPT_Podcast_Handler' => __DIR__ . '/../..' . '/php/classes/handlers/class-cpt-podcast-handler.php',
         'SeriouslySimplePodcasting\\Handlers\\Castos_Handler' => __DIR__ . '/../..' . '/php/classes/handlers/class-castos-handler.php',
         'SeriouslySimplePodcasting\\Handlers\\Feed_Handler' => __DIR__ . '/../..' . '/php/classes/handlers/class-feed-handler.php',
@@ -59,6 +60,9 @@ class ComposerStaticInit67bdb656a14a4ccb98061608d02e2284
         'SeriouslySimplePodcasting\\Helpers\\Log_Helper' => __DIR__ . '/../..' . '/php/classes/helpers/class-log-helper.php',
         'SeriouslySimplePodcasting\\Integrations\\Abstract_Integrator' => __DIR__ . '/../..' . '/php/classes/integrations/class-abstract-integrator.php',
         'SeriouslySimplePodcasting\\Integrations\\Blocks\\Castos_Blocks' => __DIR__ . '/../..' . '/php/classes/integrations/blocks/class-castos-blocks.php',
+        'SeriouslySimplePodcasting\\Integrations\\Blocks\\Castos_Html_Player_Block' => __DIR__ . '/../..' . '/php/classes/integrations/blocks/class-castos-html-player-block.php',
+        'SeriouslySimplePodcasting\\Integrations\\Blocks\\Playlist_Player_Block' => __DIR__ . '/../..' . '/php/classes/integrations/blocks/class-playlist-player-block.php',
+        'SeriouslySimplePodcasting\\Integrations\\Blocks\\Podcast_List_Block' => __DIR__ . '/../..' . '/php/classes/integrations/blocks/class-podcast-list-block.php',
         'SeriouslySimplePodcasting\\Integrations\\Blocks\\Ssp_Podcasts_Block' => __DIR__ . '/../..' . '/php/classes/integrations/blocks/class-ssp-podcasts-block.php',
         'SeriouslySimplePodcasting\\Integrations\\Elementor\\Elementor_Template_Importer' => __DIR__ . '/../..' . '/php/classes/integrations/elementor/class-elementor-template-importer.php',
         'SeriouslySimplePodcasting\\Integrations\\Elementor\\Elementor_Widgets' => __DIR__ . '/../..' . '/php/classes/integrations/elementor/class-elementor-widgets.php',
@@ -76,6 +80,7 @@ class ComposerStaticInit67bdb656a14a4ccb98061608d02e2284
         'SeriouslySimplePodcasting\\Integrations\\Yoast\\Schema\\PodcastSeries' => __DIR__ . '/../..' . '/php/classes/integrations/yoast/schema/class-podcast-series.php',
         'SeriouslySimplePodcasting\\Interfaces\\Service' => __DIR__ . '/../..' . '/php/classes/interfaces/interface-service.php',
         'SeriouslySimplePodcasting\\Interfaces\\Singleton' => __DIR__ . '/../..' . '/php/classes/interfaces/interface-singleton.php',
+        'SeriouslySimplePodcasting\\Presenters\\Episode_List_Presenter' => __DIR__ . '/../..' . '/php/classes/presenters/class-episode-list-presenter.php',
         'SeriouslySimplePodcasting\\Renderers\\Renderer' => __DIR__ . '/../..' . '/php/classes/renderers/class-renderer.php',
         'SeriouslySimplePodcasting\\Renderers\\Settings_Renderer' => __DIR__ . '/../..' . '/php/classes/renderers/class-settings-renderer.php',
         'SeriouslySimplePodcasting\\Repositories\\Episode_Repository' => __DIR__ . '/../..' . '/php/classes/repositories/class-episode-repository.php',
@@ -83,6 +88,7 @@ class ComposerStaticInit67bdb656a14a4ccb98061608d02e2284
         'SeriouslySimplePodcasting\\Repositories\\Settings_Config' => __DIR__ . '/../..' . '/php/classes/repositories/class-settings-config.php',
         'SeriouslySimplePodcasting\\Rest\\Episodes_Rest_Controller' => __DIR__ . '/../..' . '/php/classes/rest/class-episodes-rest-controller.php',
         'SeriouslySimplePodcasting\\Rest\\Rest_Api_Controller' => __DIR__ . '/../..' . '/php/classes/rest/class-rest-api-controller.php',
+        'SeriouslySimplePodcasting\\ShortCodes\\Episode_List' => __DIR__ . '/../..' . '/php/classes/shortcodes/class-episode-list.php',
         'SeriouslySimplePodcasting\\ShortCodes\\Player' => __DIR__ . '/../..' . '/php/classes/shortcodes/class-player.php',
         'SeriouslySimplePodcasting\\ShortCodes\\Podcast' => __DIR__ . '/../..' . '/php/classes/shortcodes/class-podcast.php',
         'SeriouslySimplePodcasting\\ShortCodes\\Podcast_Episode' => __DIR__ . '/../..' . '/php/classes/shortcodes/class-podcast-episode.php',
@@ -104,7 +110,7 @@ class ComposerStaticInit67bdb656a14a4ccb98061608d02e2284
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInit67bdb656a14a4ccb98061608d02e2284::$classMap;
+            $loader->classMap = ComposerStaticInit6a478a2deb6514287617194485a1f51f::$classMap;
 
         }, null, ClassLoader::class);
     }
