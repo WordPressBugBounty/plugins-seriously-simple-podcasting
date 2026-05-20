@@ -8,7 +8,6 @@ $baseDir = dirname($vendorDir);
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'SeriouslySimplePodcasting\\Controllers\\Admin_Controller' => $baseDir . '/php/classes/controllers/class-admin-controller.php',
-    'SeriouslySimplePodcasting\\Controllers\\Ads_Controller' => $baseDir . '/php/classes/controllers/class-ads-controller.php',
     'SeriouslySimplePodcasting\\Controllers\\App_Controller' => $baseDir . '/php/classes/controllers/class-app-controller.php',
     'SeriouslySimplePodcasting\\Controllers\\Assets_Controller' => $baseDir . '/php/classes/controllers/class-assets-controller.php',
     'SeriouslySimplePodcasting\\Controllers\\Controller' => $baseDir . '/php/classes/controllers/class-controller.php',
@@ -20,6 +19,7 @@ return array(
     'SeriouslySimplePodcasting\\Controllers\\Integrations_Controller' => $baseDir . '/php/classes/controllers/class-integrations-controller.php',
     'SeriouslySimplePodcasting\\Controllers\\Onboarding_Controller' => $baseDir . '/php/classes/controllers/class-onboarding-controller.php',
     'SeriouslySimplePodcasting\\Controllers\\Options_Controller' => $baseDir . '/php/classes/controllers/class-options-controller.php',
+    'SeriouslySimplePodcasting\\Controllers\\Passthrough_Controller' => $baseDir . '/php/classes/controllers/class-passthrough-controller.php',
     'SeriouslySimplePodcasting\\Controllers\\Players_Controller' => $baseDir . '/php/classes/controllers/class-players-controller.php',
     'SeriouslySimplePodcasting\\Controllers\\Podcast_Post_Types_Controller' => $baseDir . '/php/classes/controllers/class-podcast-post-types-controller.php',
     'SeriouslySimplePodcasting\\Controllers\\Review_Controller' => $baseDir . '/php/classes/controllers/class-review-controller.php',

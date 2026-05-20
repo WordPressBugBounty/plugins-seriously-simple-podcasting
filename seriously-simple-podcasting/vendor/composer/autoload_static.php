@@ -9,7 +9,6 @@ class ComposerStaticInit6a478a2deb6514287617194485a1f51f
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'SeriouslySimplePodcasting\\Controllers\\Admin_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-admin-controller.php',
-        'SeriouslySimplePodcasting\\Controllers\\Ads_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-ads-controller.php',
         'SeriouslySimplePodcasting\\Controllers\\App_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-app-controller.php',
         'SeriouslySimplePodcasting\\Controllers\\Assets_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-assets-controller.php',
         'SeriouslySimplePodcasting\\Controllers\\Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-controller.php',
@@ -21,6 +20,7 @@ class ComposerStaticInit6a478a2deb6514287617194485a1f51f
         'SeriouslySimplePodcasting\\Controllers\\Integrations_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-integrations-controller.php',
         'SeriouslySimplePodcasting\\Controllers\\Onboarding_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-onboarding-controller.php',
         'SeriouslySimplePodcasting\\Controllers\\Options_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-options-controller.php',
+        'SeriouslySimplePodcasting\\Controllers\\Passthrough_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-passthrough-controller.php',
         'SeriouslySimplePodcasting\\Controllers\\Players_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-players-controller.php',
         'SeriouslySimplePodcasting\\Controllers\\Podcast_Post_Types_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-podcast-post-types-controller.php',
         'SeriouslySimplePodcasting\\Controllers\\Review_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-review-controller.php',
