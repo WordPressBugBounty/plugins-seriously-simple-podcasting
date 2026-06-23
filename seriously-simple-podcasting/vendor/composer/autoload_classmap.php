@@ -12,7 +12,6 @@ return array(
     'SeriouslySimplePodcasting\\Controllers\\Assets_Controller' => $baseDir . '/php/classes/controllers/class-assets-controller.php',
     'SeriouslySimplePodcasting\\Controllers\\Controller' => $baseDir . '/php/classes/controllers/class-controller.php',
     'SeriouslySimplePodcasting\\Controllers\\Cron_Controller' => $baseDir . '/php/classes/controllers/class-cron-controller.php',
-    'SeriouslySimplePodcasting\\Controllers\\DB_Migration_Controller' => $baseDir . '/php/classes/controllers/class-db-migration-controller.php',
     'SeriouslySimplePodcasting\\Controllers\\Episode_Controller' => $baseDir . '/php/classes/controllers/class-episode-controller.php',
     'SeriouslySimplePodcasting\\Controllers\\Feed_Controller' => $baseDir . '/php/classes/controllers/class-feed-controller.php',
     'SeriouslySimplePodcasting\\Controllers\\Frontend_Controller' => $baseDir . '/php/classes/controllers/class-frontend-controller.php',

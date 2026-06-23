@@ -13,7 +13,6 @@ class ComposerStaticInit6a478a2deb6514287617194485a1f51f
         'SeriouslySimplePodcasting\\Controllers\\Assets_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-assets-controller.php',
         'SeriouslySimplePodcasting\\Controllers\\Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-controller.php',
         'SeriouslySimplePodcasting\\Controllers\\Cron_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-cron-controller.php',
-        'SeriouslySimplePodcasting\\Controllers\\DB_Migration_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-db-migration-controller.php',
         'SeriouslySimplePodcasting\\Controllers\\Episode_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-episode-controller.php',
         'SeriouslySimplePodcasting\\Controllers\\Feed_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-feed-controller.php',
         'SeriouslySimplePodcasting\\Controllers\\Frontend_Controller' => __DIR__ . '/../..' . '/php/classes/controllers/class-frontend-controller.php',
