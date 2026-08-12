@@ -3,7 +3,7 @@
         'name' => 'castos/seriously-simple-podcasting',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '0c24444a122237433470116afec41d06866b33a9',
+        'reference' => '227e548c6ca386b7e0a43a6fd709fb0d09812623',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'castos/seriously-simple-podcasting' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '0c24444a122237433470116afec41d06866b33a9',
+            'reference' => '227e548c6ca386b7e0a43a6fd709fb0d09812623',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit6a478a2deb6514287617194485a1f51f
+class ComposerStaticInit2bd70da3d64bc8295f0267f801395aa1
 {
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
@@ -32,8 +32,6 @@ class ComposerStaticInit6a478a2deb6514287617194485a1f51f
         'SeriouslySimplePodcasting\\Entities\\API_Podcast' => __DIR__ . '/../..' . '/php/classes/entities/class-api-podcast.php',
         'SeriouslySimplePodcasting\\Entities\\Abstract_API_Entity' => __DIR__ . '/../..' . '/php/classes/entities/class-abstract-api-entity.php',
         'SeriouslySimplePodcasting\\Entities\\Abstract_Entity' => __DIR__ . '/../..' . '/php/classes/entities/class-abstract-entity.php',
-        'SeriouslySimplePodcasting\\Entities\\Available_Podcasts_Attribute' => __DIR__ . '/../..' . '/php/classes/entities/class-available-podcasts-attribute.php',
-        'SeriouslySimplePodcasting\\Entities\\Available_Tags_Attribute' => __DIR__ . '/../..' . '/php/classes/entities/class-available-tags-attribute.php',
         'SeriouslySimplePodcasting\\Entities\\Castos_File_Data' => __DIR__ . '/../..' . '/php/classes/entities/class-castos-file-data.php',
         'SeriouslySimplePodcasting\\Entities\\Castos_Response' => __DIR__ . '/../..' . '/php/classes/entities/class-castos-response.php',
         'SeriouslySimplePodcasting\\Entities\\Castos_Response_Episode' => __DIR__ . '/../..' . '/php/classes/entities/class-castos-response-episode.php',
@@ -109,7 +107,7 @@ class ComposerStaticInit6a478a2deb6514287617194485a1f51f
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInit6a478a2deb6514287617194485a1f51f::$classMap;
+            $loader->classMap = ComposerStaticInit2bd70da3d64bc8295f0267f801395aa1::$classMap;
 
         }, null, ClassLoader::class);
     }
